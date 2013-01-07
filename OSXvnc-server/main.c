@@ -41,6 +41,18 @@
 #include "rfbserver.h"
 #import "VNCServer.h"
 
+double BSkeyPressTime; // = [[NSDate date] timeIntervalSince1970];
+Bool BSkeyPressed = false;
+long BSDataSize;
+int BSnumberOfSingleRect;
+int BSnumberOfJpegRectangles;
+double BSJpegProcessTime;
+double BSSendDataTime;
+double BSSendRectTime;
+double BSCompressionTime;
+
+double getMStime() {return (double) [[NSDate date] timeIntervalSince1970]; }
+
 ScreenRec hackScreen;
 rfbScreenInfo rfbScreen;
 
@@ -175,6 +187,7 @@ void refreshCallback(CGRectCount count, const CGRect *rectArray, void *ignore) {
     rfbClientIteratorPtr iterator;
     rfbClientPtr cl = NULL;
     int i;
+    //rfbLog("[BrowserStack] New update Available.");
 
     for (i = 0; i < count; i++) {
         box.x1 = rectArray[i].origin.x;
@@ -1062,6 +1075,9 @@ int main(int argc, char *argv[]) {
     vncServerObject = [[VNCServer alloc] init];
 	littleEndian = runningLittleEndian();
     checkForUsage(argc,argv);
+    
+    BSkeyPressTime = getMStime();
+    BSkeyPressed = false;
     
 	// The bug with unregistering from user updates may have been fixed in 10.4 Tiger
 	if (floor(NSAppKitVersionNumber) > floor(NSAppKitVersionNumber10_3))

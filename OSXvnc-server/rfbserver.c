@@ -40,7 +40,7 @@
 #include <netdb.h>
 
 #include "rfb.h"
-
+//#include "rfbserver.h"
 //char updateBuf[UPDATE_BUF_SIZE];
 //int ublen;
 
@@ -849,6 +849,11 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
                 rfbCloseClient(cl);
                 return;
             }
+            if (msg.ke.down) {
+                BSkeyPressTime = [[NSDate date] timeIntervalSince1970];
+                BSkeyPressed = true;
+                //rfbLog("[BrowserStack] client key event.. at %e", BSkeyPressTime);
+            }
 
                 if (!cl->disableRemoteEvents)
                     KbdAddEvent(msg.ke.down, (KeySym)Swap32IfLE(msg.ke.key), cl);
@@ -1065,6 +1070,19 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
     fu->nRects = Swap16IfLE(nUpdateRegionRects);
     cl->ublen = sz_rfbFramebufferUpdateMsg;
 	
+    //rfbLog("[BrowserStack] Pushing %d rectangles now", REGION_NUM_RECTS(&updateRegion));
+    double minuteDifference;
+    //if (BSkeyPressed) {
+        minuteDifference = getMStime() - BSkeyPressTime;
+    //}
+    BSDataSize = cl->rfbBytesSent[rfbEncodingTight];
+    BSnumberOfJpegRectangles = 0;
+    BSnumberOfSingleRect = 0;
+    BSJpegProcessTime = 0;
+    BSSendDataTime = 0;
+    BSSendRectTime = 0;
+    BSCompressionTime = 0;
+    
     // Sometimes send the mouse cursor update (this can fail with big cursors so we'll try it first
     if (sendRichCursorEncoding) {
         if (!rfbSendRichCursorUpdate(cl)) {
@@ -1092,12 +1110,16 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
     }
 	
 	cl->screenBuffer = rfbGetFramebuffer();
+    long BStotalRectangleSize = 0;
 		
     for (i = 0; i < REGION_NUM_RECTS(&updateRegion); i++) {
         int x = REGION_RECTS(&updateRegion)[i].x1;
         int y = REGION_RECTS(&updateRegion)[i].y1;
         int w = REGION_RECTS(&updateRegion)[i].x2 - x;
         int h = REGION_RECTS(&updateRegion)[i].y2 - y;
+        
+        BStotalRectangleSize += w*h;
+        //rfbLog("rectangle size : %d", w*h);
 		
 		rfbGetFramebufferUpdateInRect(x,y,w,h);
 
@@ -1155,6 +1177,16 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
         }
     }
 
+    //rfbLog("[BrowserStack] Pushed %d rectangles!", REGION_NUM_RECTS(&updateRegion));
+    //if (BSkeyPressed) {
+    if (BStotalRectangleSize > 0) {
+        double minuteDifference1 = getMStime() - BSkeyPressTime;
+        if (BStotalRectangleSize > 9000) {
+            rfbLog("[BrowserStack] %d, %d, %f, %f, %d, %f, %f, %f, %f, %d, %d", REGION_NUM_RECTS(&updateRegion), BStotalRectangleSize, minuteDifference*1000, (minuteDifference1 - minuteDifference)*1000, (cl->rfbBytesSent[rfbEncodingTight] - BSDataSize), BSJpegProcessTime, BSSendDataTime, BSCompressionTime, BSSendRectTime, BSnumberOfJpegRectangles, BSnumberOfSingleRect);
+        }
+    }
+    //}
+    BSkeyPressed = false;
     if (nUpdateRegionRects == 0xFFFF && !rfbSendLastRectMarker(cl))
         return FALSE;
 
@@ -1295,7 +1327,7 @@ Bool rfbSendUpdateBuf(rfbClientPtr cl) {
      }
      fprintf(stderr,"\n");
      */
-
+    double t = getMStime();
     if (WriteExact(cl, cl->updateBuf, cl->ublen) < 0) {
         rfbLogPerror("rfbSendUpdateBuf: write");
         rfbCloseClient(cl);
@@ -1303,6 +1335,7 @@ Bool rfbSendUpdateBuf(rfbClientPtr cl) {
     }
 
     cl->ublen = 0;
+    BSSendDataTime += (getMStime()*1000 - t*1000);
     return TRUE;
 }
 

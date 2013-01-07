@@ -321,7 +321,7 @@ typedef struct rfbClientRec {
      * means 8K minimum.
      */
 
-#define UPDATE_BUF_SIZE 1200000
+#define UPDATE_BUF_SIZE 30000
     char updateBuf[UPDATE_BUF_SIZE];
     int ublen;
     
@@ -639,3 +639,16 @@ screen_data_t *screen_InitCapture ();
 extern char *screen_Capture (screen_data_t *p_data);
 extern void screen_CloseCapture (screen_data_t *p_data);
 
+/* BrowserStack */
+extern Bool BSkeyPressed;
+extern long BSDataSize;
+extern int BSnumberOfJpegRectangles;
+extern int BSnumberOfSingleRect;
+
+extern double BSJpegProcessTime;
+extern double BSCompressionTime;
+extern double BSSendDataTime;
+extern double BSSendRectTime;
+
+extern double BSkeyPressTime;
+extern double getMStime();

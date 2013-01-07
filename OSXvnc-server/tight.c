@@ -472,6 +472,9 @@ SendRectSimple(cl, x, y, w, h)
     rfbClientPtr cl;
     int x, y, w, h;
 {
+    // rfbLog("SendRectSimple : %d", w*h);
+    BSnumberOfSingleRect++;
+    double timenow = getMStime();
     int maxBeforeSize, maxAfterSize;
     int maxRectSize, maxRectWidth;
     int subrectMaxWidth, subrectMaxHeight;
@@ -518,6 +521,7 @@ SendRectSimple(cl, x, y, w, h)
         if (!SendSubrect(cl, x, y, w, h))
             return FALSE;
     }
+    BSSendRectTime += (getMStime()*1000 - timenow*1000);
 
     return TRUE;
 }
@@ -527,6 +531,7 @@ SendSubrect(cl, x, y, w, h)
     rfbClientPtr cl;
     int x, y, w, h;
 {
+    //rfbLog("SendSubrect : %d", w*h);
     char *fbptr;
     Bool success = FALSE;
 
@@ -778,9 +783,10 @@ SendIndexedRect(cl, w, h)
         return FALSE;           /* Should never happen. */
     }
 
-    return CompressData(cl, streamId, w * h,
+    Bool cd = CompressData(cl, streamId, w * h,
                         tightConf[compressLevel].idxZlibLevel,
                         Z_DEFAULT_STRATEGY);
+    return cd;
 }
 
 static Bool
@@ -855,6 +861,7 @@ CompressData(cl, streamId, dataLen, zlibLevel, zlibStrategy)
     int streamId, dataLen, zlibLevel, zlibStrategy;
 {
     z_streamp pz;
+    double t = getMStime();
     int err;
 
     if (dataLen < TIGHT_MIN_TO_COMPRESS) {
@@ -901,7 +908,9 @@ CompressData(cl, streamId, dataLen, zlibLevel, zlibStrategy)
         return FALSE;
     }
 
-    return SendCompressedData(cl, tightAfterBufSize - pz->avail_out);
+    Bool d = SendCompressedData(cl, tightAfterBufSize - pz->avail_out);
+    BSCompressionTime += (getMStime()*1000 - t*1000);
+    return d;
 }
 
 static Bool SendCompressedData(cl, compressedLen)
@@ -1652,6 +1661,9 @@ SendJpegRect(cl, x, y, w, h, quality)
     int x, y, w, h;
     int quality;
 {
+    // rfbLog("JpegRect : %d", w*h);
+    double cTime = getMStime();
+    BSnumberOfJpegRectangles++;
     struct jpeg_compress_struct cinfo;
     struct jpeg_error_mgr jerr;
     CARD8 *srcBuf;
@@ -1708,7 +1720,9 @@ SendJpegRect(cl, x, y, w, h, quality)
     cl->updateBuf[cl->ublen++] = (char)(rfbTightJpeg << 4);
     cl->rfbBytesSent[rfbEncodingTight]++;
 
-    return SendCompressedData(cl, jpegDstDataLen);
+    Bool r = SendCompressedData(cl, jpegDstDataLen);
+    BSJpegProcessTime += (getMStime()*1000 - cTime*1000);
+    return r;
 }
 
 static void
