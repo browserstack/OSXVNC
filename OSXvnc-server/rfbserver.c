@@ -850,7 +850,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
                 return;
             }
             if (msg.ke.down) {
-                BSkeyPressTime = [[NSDate date] timeIntervalSince1970];
+                BSkeyPressTime = getMStime() * 1000; //[[NSDate date] timeIntervalSince1970];
                 BSkeyPressed = true;
                 //rfbLog("[BrowserStack] client key event.. at %e", BSkeyPressTime);
             }
@@ -1073,7 +1073,7 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
     //rfbLog("[BrowserStack] Pushing %d rectangles now", REGION_NUM_RECTS(&updateRegion));
     double minuteDifference;
     //if (BSkeyPressed) {
-        minuteDifference = getMStime() - BSkeyPressTime;
+        minuteDifference = getMStime() * 1000 - BSkeyPressTime;
     //}
     BSDataSize = cl->rfbBytesSent[rfbEncodingTight];
     BSnumberOfJpegRectangles = 0;
@@ -1111,7 +1111,7 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
 	
 	cl->screenBuffer = rfbGetFramebuffer();
     long BStotalRectangleSize = 0;
-		
+    double BSTimeToTakeScreenshot;
     for (i = 0; i < REGION_NUM_RECTS(&updateRegion); i++) {
         int x = REGION_RECTS(&updateRegion)[i].x1;
         int y = REGION_RECTS(&updateRegion)[i].y1;
@@ -1120,9 +1120,9 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
         
         BStotalRectangleSize += w*h;
         //rfbLog("rectangle size : %d", w*h);
-		
+		BSTimeToTakeScreenshot = getMStime() * 1000;
 		rfbGetFramebufferUpdateInRect(x,y,w,h);
-
+        BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
 		
 		// Refresh with latest pointer (should be "read-locked" throughout here with CG but I don't see that option)
 		if (cl->scalingFactor != 1)
@@ -1180,9 +1180,10 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
     //rfbLog("[BrowserStack] Pushed %d rectangles!", REGION_NUM_RECTS(&updateRegion));
     //if (BSkeyPressed) {
     if (BStotalRectangleSize > 0) {
-        double minuteDifference1 = getMStime() - BSkeyPressTime;
+        double minuteDifference1 = getMStime() * 1000 - BSkeyPressTime;
         if (BStotalRectangleSize > 9000) {
-            rfbLog("[BrowserStack] %d, %d, %f, %f, %d, %f, %f, %f, %f, %d, %d", REGION_NUM_RECTS(&updateRegion), BStotalRectangleSize, minuteDifference*1000, (minuteDifference1 - minuteDifference)*1000, (cl->rfbBytesSent[rfbEncodingTight] - BSDataSize), BSJpegProcessTime, BSSendDataTime, BSCompressionTime, BSSendRectTime, BSnumberOfJpegRectangles, BSnumberOfSingleRect);
+            rfbLog("[BrowserStack] %d, %d, %f, %f, %f, %d, %f, %f, %f, %f, %d, %d", REGION_NUM_RECTS(&updateRegion), BStotalRectangleSize, minuteDifference, BSTimeToTakeScreenshot, (minuteDifference1 - minuteDifference - BSSendDataTime), (cl->rfbBytesSent[rfbEncodingTight] - BSDataSize), BSJpegProcessTime, BSSendDataTime, BSCompressionTime, BSSendRectTime, BSnumberOfJpegRectangles, BSnumberOfSingleRect);
+            //rfbLog("[BrowserStack] %d, %d, %f, %f, %d, %f, %f, %f, %f, %d, %d", REGION_NUM_RECTS(&updateRegion), BStotalRectangleSize, minuteDifference*1000, (minuteDifference1 - minuteDifference)*1000, (cl->rfbBytesSent[rfbEncodingTight] - BSDataSize), BSJpegProcessTime, BSSendDataTime, BSCompressionTime, BSSendRectTime, BSnumberOfJpegRectangles, BSnumberOfSingleRect);
         }
     }
     //}
