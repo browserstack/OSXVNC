@@ -344,7 +344,7 @@ static void *clientOutput(void *data) {
 			// Only do checks if we HAVE an outstanding request
 			if (REGION_NOTEMPTY(&hackScreen, &cl->requestedRegion)) {
 				/* REDSTONE */
-				if (rfbDeferUpdateTime > 0 && !cl->immediateUpdate) {
+				if (!cl->immediateUpdate) {
 					// Compare Request with Update Area
 					REGION_INIT(&hackScreen, &updateRegion, NullBox, 0);
 					REGION_INTERSECT(&hackScreen, &updateRegion, &cl->modifiedRegion, &cl->requestedRegion);
