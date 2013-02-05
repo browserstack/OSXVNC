@@ -23,6 +23,8 @@
 
 /* Begin PBXBuildFile section */
 		9199995B0B1135FF0099EA7A /* getMACAddress.c in Sources */ = {isa = PBXBuildFile; fileRef = 919999430B11348E0099EA7A /* getMACAddress.c */; };
+		9D9592E416A55007005C52D2 /* copyrect.c in Sources */ = {isa = PBXBuildFile; fileRef = 9D9592E316A55007005C52D2 /* copyrect.c */; };
+		9DB761EC169C011700BCBC31 /* rfbserver.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11502F9812C01A80186 /* rfbserver.c */; };
 		AB25D81F08686B520065843D /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F57BB467027E036F014B5D3F /* Credits.rtf */; };
 		AB25D82008686B520065843D /* Vine Server Release Notes.rtf in Resources */ = {isa = PBXBuildFile; fileRef = AB541C2907A0264F00B63668 /* Vine Server Release Notes.rtf */; };
 		AB25D82108686B520065843D /* Copying.rtf in Resources */ = {isa = PBXBuildFile; fileRef = AB541C3B07A0273500B63668 /* Copying.rtf */; };
@@ -43,7 +45,6 @@
 		AB25D89C0868704B0065843D /* kbdptr.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E03502F9812901A80186 /* kbdptr.c */; };
 		AB25D89E0868704C0065843D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E10E02F9812C01A80186 /* main.c */; };
 		AB25D89F0868704C0065843D /* miregion.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11002F9812C01A80186 /* miregion.c */; };
-		AB25D8A00868704D0065843D /* rfbserver.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11502F9812C01A80186 /* rfbserver.c */; };
 		AB25D8A10868704E0065843D /* rre.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11602F9812C01A80186 /* rre.c */; };
 		AB25D8A20868704E0065843D /* sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11702F9812C01A80186 /* sockets.c */; };
 		AB25D8A30868704F0065843D /* stats.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11802F9812C01A80186 /* stats.c */; };
@@ -196,6 +197,7 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		919999420B11348C0099EA7A /* getMACAddress.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = getMACAddress.h; sourceTree = "<group>"; };
 		919999430B11348E0099EA7A /* getMACAddress.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 30; path = getMACAddress.c; sourceTree = "<group>"; };
+		9D9592E316A55007005C52D2 /* copyrect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = copyrect.c; sourceTree = "<group>"; };
 		AB25D83708686B520065843D /* VineServer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "VineServer-Info.plist"; sourceTree = "<group>"; };
 		AB25D83808686B520065843D /* Vine Server.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Vine Server.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB25DA3A0868842E0065843D /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
@@ -624,6 +626,7 @@
 				F538E11A02F9812C01A80186 /* tableinitcmtemplate.c */,
 				F538E11B02F9812C01A80186 /* tableinittctemplate.c */,
 				F538E11C02F9812C01A80186 /* tabletranstemplate.c */,
+				9D9592E316A55007005C52D2 /* copyrect.c */,
 				F538E11D02F9812C01A80186 /* tight.c */,
 				F538E11F02F9812C01A80186 /* translate.c */,
 				F538E12002F9812C01A80186 /* xalloc.c */,
@@ -1110,7 +1113,6 @@
 				AB25D89C0868704B0065843D /* kbdptr.c in Sources */,
 				AB25D89E0868704C0065843D /* main.c in Sources */,
 				AB25D89F0868704C0065843D /* miregion.c in Sources */,
-				AB25D8A00868704D0065843D /* rfbserver.c in Sources */,
 				AB25D8A10868704E0065843D /* rre.c in Sources */,
 				AB25D8A20868704E0065843D /* sockets.c in Sources */,
 				AB25D8A30868704F0065843D /* stats.c in Sources */,
@@ -1123,6 +1125,8 @@
 				ABA7B3D60948CB5D00CD7499 /* d3des.c in Sources */,
 				ABA7B3D70948CB5D00CD7499 /* vncauth.c in Sources */,
 				9199995B0B1135FF0099EA7A /* getMACAddress.c in Sources */,
+				9DB761EC169C011700BCBC31 /* rfbserver.c in Sources */,
+				9D9592E416A55007005C52D2 /* copyrect.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1287,8 +1291,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Developer ID Application: TestPlant Inc.";
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				"GCC_OPTIMIZATION_LEVEL[arch=*]" = 0;
 				PRODUCT_NAME = "Vine Server Package";
 			};
 			name = Development;
@@ -1297,8 +1303,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Developer ID Application: TestPlant Inc.";
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PRODUCT_NAME = "Vine Server Package";
 			};
 			name = Deployment;
@@ -1306,23 +1312,29 @@
 		ABA7B538094A054A00CD7499 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "osxvnc-server";
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = rdr;
+				SDKROOT = macosx10.7;
 			};
 			name = Development;
 		};
 		ABA7B539094A054A00CD7499 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				CXX = "g++-3.3 ";
 				DEPLOYMENT_POSTPROCESSING = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "osxvnc-server";
 				PRODUCT_NAME = rdr;
+				SDKROOT = macosx10.7;
 				SEPARATE_STRIP = NO;
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
@@ -1331,14 +1343,20 @@
 		ABA7B638094A0A6E00CD7499 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_VERSION = "";
 				PRODUCT_NAME = jpg;
+				SDKROOT = macosx10.7;
 			};
 			name = Development;
 		};
 		ABA7B639094A0A6E00CD7499 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_VERSION = "";
 				PRODUCT_NAME = jpg;
+				SDKROOT = macosx10.7;
 			};
 			name = Deployment;
 		};
@@ -1346,6 +1364,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"OSXvnc-server",
 					"OSXvnc-server/include",
@@ -1354,6 +1374,7 @@
 					libjpeg,
 				);
 				PRODUCT_NAME = "OSXvnc-server";
+				SDKROOT = macosx10.7;
 			};
 			name = Development;
 		};
@@ -1364,6 +1385,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"OSXvnc-server",
 					"OSXvnc-server/include",
@@ -1371,6 +1393,7 @@
 				);
 				MACH_O_TYPE = mh_execute;
 				PRODUCT_NAME = "OSXvnc-server";
+				SDKROOT = macosx10.7;
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Deployment;
@@ -1378,7 +1401,9 @@
 		ABECD3E308E46414009C84A0 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = "";
 				PRODUCT_NAME = storepasswd;
+				SDKROOT = macosx10.7;
 			};
 			name = Development;
 		};
@@ -1386,16 +1411,22 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
+				GCC_VERSION = "";
 				PRODUCT_NAME = storepasswd;
+				SDKROOT = macosx10.7;
 			};
 			name = Deployment;
 		};
 		ABECD3EB08E46414009C84A0 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_VERSION = "";
 				INFOPLIST_FILE = "VineServer-Info.plist";
 				INSTALL_PATH = "/Vine Server/";
 				PRODUCT_NAME = "Vine Server";
+				SDKROOT = macosx10.6;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Development;
@@ -1404,12 +1435,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
+				COMBINE_HIDPI_IMAGES = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = /tmp;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_VERSION = "";
 				INFOPLIST_FILE = "VineServer-Info.plist";
 				INSTALL_PATH = "/Vine Server/";
 				PRODUCT_NAME = "Vine Server";
+				SDKROOT = macosx10.6;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Deployment;

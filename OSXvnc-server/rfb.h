@@ -129,6 +129,33 @@ typedef struct rfbClientRec {
        either modifiedRegion or requestedRegion is changed (as either
        of these may trigger sending an update out to the client). */
 
+    /* The following members represent the update needed to get the client's
+     framebuffer from its present state to the current state of our
+     framebuffer.
+     
+     If the client does not accept CopyRect encoding then the update is
+     simply represented as the region of the screen which has been modified
+     (modifiedRegion).
+     
+     If the client does accept CopyRect encoding, then the update consists of
+     two parts.  First we have a single copy from one region of the screen to
+     another (the destination of the copy is copyRegion), and second we have
+     the region of the screen which has been modified in some other way
+     (modifiedRegion).
+     
+     Although the copy is of a single region, this region may have many
+     rectangles.  When sending an update, the copyRegion is always sent
+     before the modifiedRegion.  This is because the modifiedRegion may
+     overlap parts of the screen which are in the source of the copy.
+     
+     In fact during normal processing, the modifiedRegion may even overlap
+     the destination copyRegion.  Just before an update is sent we remove
+     from the copyRegion anything in the modifiedRegion. */
+    
+    RegionRec copyRegion;	/**< the destination region of the copy */
+    int copyDX, copyDY;		/**< the translation by which the copy happens */
+    
+
     pthread_mutex_t updateMutex;
     pthread_cond_t updateCond;
 
@@ -218,6 +245,7 @@ typedef struct rfbClientRec {
     Bool reverseConnection;
     Bool readyForSetColourMapEntries;
     Bool useCopyRect;
+    Bool firstCopyRect;
     
     int preferredEncoding;
     
@@ -574,6 +602,10 @@ extern Bool rfbSendRectEncodingHextile(rfbClientPtr cl, int x, int y, int w,
 
 extern Bool rfbSendRectEncodingZlib(rfbClientPtr cl, int x, int y, int w,
                                     int h);
+
+/* copyrect.c */
+
+extern Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int* x, int* y, int* w, int* h);
 
 /* tight.c */
 

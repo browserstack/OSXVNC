@@ -709,6 +709,9 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
 
                 switch (enc) {
                     case rfbEncodingCopyRect:
+                        rfbLog("\tEnabling CopyRect Encoding for client %s\n", cl->host);
+                        cl->useCopyRect = TRUE;
+                        cl->firstCopyRect = TRUE;
                         break;
                     case rfbEncodingRaw:
                     case rfbEncodingRRE:
@@ -1132,6 +1135,15 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
 		
         cl->rfbRawBytesEquivalent += (sz_rfbFramebufferUpdateRectHeader
                                       + w * (cl->format.bitsPerPixel / 8) * h);
+        
+        // Process CopyRect first if client supports it
+        if (cl->useCopyRect == TRUE && cl->firstCopyRect == FALSE){
+            rfbSendRectEncodingCopyRect(cl, &x, &y, &w, &h); // Sending in pointers, because copyrect removes the necessity of processing certain regions.
+        }
+        else
+        {
+            cl->firstCopyRect = FALSE;
+        }
 
         switch (cl->preferredEncoding) {
             case rfbEncodingRaw:
