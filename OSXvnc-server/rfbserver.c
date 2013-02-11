@@ -712,6 +712,10 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
                         rfbLog("\tEnabling CopyRect Encoding for client %s\n", cl->host);
                         cl->useCopyRect = TRUE;
                         cl->firstCopyRect = TRUE;
+                        const unsigned long csh = (rfbScreen.height+cl->scalingFactor-1)/ cl->scalingFactor;
+                        const unsigned long csw = (rfbScreen.width +cl->scalingFactor-1)/ cl->scalingFactor;
+                        cl->scalingFrameBufferCache = malloc( csw*csh*rfbScreen.bitsPerPixel/8 );
+                        cl->realFrameBuffer = malloc( csw*csh*rfbScreen.bitsPerPixel/8 );
                         break;
                     case rfbEncodingRaw:
                     case rfbEncodingRRE:
@@ -949,6 +953,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
 				}
 				else {
 					cl->scalingFrameBuffer = malloc( csw*csh*rfbScreen.bitsPerPixel/8 );
+                    cl->scalingFrameBufferCache = malloc( csw*csh*rfbScreen.bitsPerPixel/8 );
 					cl->scalingPaddedWidthInBytes = csw * rfbScreen.bitsPerPixel/8;
 				}
 
@@ -1115,18 +1120,19 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
 	cl->screenBuffer = rfbGetFramebuffer();
     long BStotalRectangleSize = 0;
     double BSTimeToTakeScreenshot;
+
     for (i = 0; i < REGION_NUM_RECTS(&updateRegion); i++) {
         int x = REGION_RECTS(&updateRegion)[i].x1;
         int y = REGION_RECTS(&updateRegion)[i].y1;
         int w = REGION_RECTS(&updateRegion)[i].x2 - x;
         int h = REGION_RECTS(&updateRegion)[i].y2 - y;
-        
+
         BStotalRectangleSize += w*h;
         //rfbLog("rectangle size : %d", w*h);
 		BSTimeToTakeScreenshot = getMStime() * 1000;
 		rfbGetFramebufferUpdateInRect(x,y,w,h);
         BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
-		
+
 		// Refresh with latest pointer (should be "read-locked" throughout here with CG but I don't see that option)
 		if (cl->scalingFactor != 1)
 			CopyScalingRect( cl, &x, &y, &w, &h, TRUE);
@@ -1195,7 +1201,6 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
         double minuteDifference1 = getMStime() * 1000 - BSkeyPressTime;
         if (BStotalRectangleSize > 9000) {
             rfbLog("[BrowserStack] %d, %d, %f, %f, %f, %d, %f, %f, %f, %f, %d, %d", REGION_NUM_RECTS(&updateRegion), BStotalRectangleSize, minuteDifference, BSTimeToTakeScreenshot, (minuteDifference1 - minuteDifference - BSSendDataTime), (cl->rfbBytesSent[rfbEncodingTight] - BSDataSize), BSJpegProcessTime, BSSendDataTime, BSCompressionTime, BSSendRectTime, BSnumberOfJpegRectangles, BSnumberOfSingleRect);
-            //rfbLog("[BrowserStack] %d, %d, %f, %f, %d, %f, %f, %f, %f, %d, %d", REGION_NUM_RECTS(&updateRegion), BStotalRectangleSize, minuteDifference*1000, (minuteDifference1 - minuteDifference)*1000, (cl->rfbBytesSent[rfbEncodingTight] - BSDataSize), BSJpegProcessTime, BSSendDataTime, BSCompressionTime, BSSendRectTime, BSnumberOfJpegRectangles, BSnumberOfSingleRect);
         }
     }
     //}

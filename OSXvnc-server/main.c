@@ -292,7 +292,11 @@ void rfbCheckForScreenResolutionChange() {
 						
 						// Reset Frame Buffer
 						free(cl->scalingFrameBuffer);
+                        free(cl->scalingFrameBufferCache);
+                        free(cl->realFrameBuffer);
+                        cl->realFrameBuffer = malloc( csw*csh*rfbScreen.bitsPerPixel/8 );
 						cl->scalingFrameBuffer = malloc( csw*csh*rfbScreen.bitsPerPixel/8 );
+                        cl->scalingFrameBufferCache = malloc( csw*csh*rfbScreen.bitsPerPixel/8 );
 						cl->scalingPaddedWidthInBytes = csw * rfbScreen.bitsPerPixel/8;
 					}
 					

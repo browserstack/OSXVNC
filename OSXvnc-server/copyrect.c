@@ -10,26 +10,107 @@
 #include <pthread.h>
 #include "rfb.h"
 
+#define DEBUG_MASK_COPYRECT FALSE
+
 /*
  * Returns the pixel offset by which a vertical scroll has taken place
  * Returns zero if no scroll could be detected
  *
  */
 
-static int detectVerticalScroll(int w){
-    rfbDebugLog("Detecting vertical scroll now");
-    //if(w > 800)
-    //    return 40;
-    //else
-        return 0;
+static int detectVerticalScroll(char * currentFb, rfbClientPtr cl, int fbWidthBytes, int fbHeight, int modRegionX, int modRegionY, int modifiedWidth, int modifiedHeight){
+    
+    //rfbDebugLog("Detecting vertical scroll now");
+    int bytesPerPixel = rfbScreen.bitsPerPixel/8;
+    int testScroll = 0;
+    char * cachedFb = cl->scalingFrameBufferCache;
+    rfbDebugLog("starting cmp");
+    //AAAAAA//
+    //////////////////////////////
+    if(DEBUG_MASK_COPYRECT){
+        modifiedWidth--;
+        modifiedWidth--;
+        modifiedWidth--;
+        modRegionX++;
+        for(testScroll=40;testScroll<=40;testScroll++){
+            int x=0;
+            
+            for(int i=0;i<modifiedHeight - testScroll;i++){
+                //if (x==0){
+                for(int j=bytesPerPixel;j<bytesPerPixel * modifiedWidth;j++){
+                    //x = memcmp(cachedFb + modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + ((i+testScroll) * fbWidthBytes), currentFb+ modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + i * fbWidthBytes, (size_t)1);
+                    //if (0<=i<=14 && (0<=j<bytesPerPixel || j==modifiedWidth)){
+                    //    continue;
+                    //}
+                    if ( *(cachedFb + modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + ((i+testScroll) * fbWidthBytes) + j) == *(cl->realFrameBuffer + modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + i * fbWidthBytes + j)){
+                        *(currentFb+ modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + i * fbWidthBytes + j) = 0x00;
+                    }
+                    else {
+                        *(currentFb+ modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + i * fbWidthBytes + j) = 0xAA;
+                        x=1;
+                    }
+                    
+                    //}
+                }
+            }
+            if(x==0)
+                rfbDebugLog("masked scroll: %d",testScroll);
+            //return testScroll;
+            x=0;
+            for(int i=0;i<modifiedHeight - testScroll;i++){
+                if (x==0){
+                    x = memcmp(cachedFb + modRegionY * fbWidthBytes + i * fbWidthBytes + modRegionX * bytesPerPixel, currentFb + ((i+testScroll) * fbWidthBytes) + modRegionY * fbWidthBytes + modRegionX * bytesPerPixel, (size_t)(bytesPerPixel * modifiedWidth));
+                }
+            }
+            //    if(x==0)
+            //        return (-1 * testScroll);
+            
+        }
+    }
+    else {
+        ///////////////////////////////
+        
+        
+        modifiedWidth--;
+        modifiedWidth--;
+        modifiedWidth--;
+        modRegionX++;
+        for(testScroll=0;testScroll<=modifiedHeight-40;testScroll++){
+            int x=0;
+            //
+            for(int i=0;i<modifiedHeight - testScroll;i++){
+                if (x==0){
+                    x = memcmp(cachedFb + modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + ((i+testScroll) * fbWidthBytes), currentFb+ modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + i * fbWidthBytes, (size_t)(bytesPerPixel * modifiedWidth));
+                }
+            }
+            if(x==0){
+                if (testScroll != 0)
+                    return testScroll;
+                else
+                    return 12345;
+            }
+            
+            x=0;
+            for(int i=0;i<modifiedHeight - testScroll;i++){
+                if (x==0){
+                    x = memcmp(cachedFb + modRegionY * fbWidthBytes + i * fbWidthBytes + modRegionX * bytesPerPixel, currentFb + ((i+testScroll) * fbWidthBytes) + modRegionY * fbWidthBytes + modRegionX * bytesPerPixel, (size_t)(bytesPerPixel * modifiedWidth));
+                }
+            }
+            if(x==0)
+                return (-1 * testScroll);
+        }
+    }
+    ///*///
+    rfbDebugLog("not a scroll");
+    return 0;
 }
 
 /*
  * Sends copyrect headers
  */
 static Bool sendCopyRectHeader(cl, x, y, w, h)
-    rfbClientPtr cl;
-    int x, y, w, h;
+rfbClientPtr cl;
+int x, y, w, h;
 {
     rfbFramebufferUpdateRectHeader rect;
     if (cl->ublen + sz_rfbFramebufferUpdateRectHeader > UPDATE_BUF_SIZE) {
@@ -71,9 +152,9 @@ static Bool sendCopyRect(rfbClientPtr cl, int x, int y, int w, int h, rfbCopyRec
     memcpy(&cl->updateBuf[cl->ublen], (char *)&cp,
            sz_rfbCopyRect);
     cl->ublen += sz_rfbCopyRect;
-
-//    if(!rfbSendUpdateBuf(cl))
-//        return FALSE;
+    
+    //    if(!rfbSendUpdateBuf(cl))
+    //        return FALSE;
     
     return TRUE;
 }
@@ -87,33 +168,59 @@ static Bool sendCopyRect(rfbClientPtr cl, int x, int y, int w, int h, rfbCopyRec
 
 Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int* x, int* y, int* w, int* h)
 {
+    const unsigned long csh = (rfbScreen.height+cl->scalingFactor-1)/ cl->scalingFactor;
+    const unsigned long csw = (rfbScreen.width +cl->scalingFactor-1)/ cl->scalingFactor;
     
-    rfbDebugLog("Starting copyrect processing");
+    // get current FB
+    char *fbptr = (cl->scalingFrameBuffer + (cl->scalingPaddedWidthInBytes * 0)
+                   + (0 * (rfbScreen.bitsPerPixel / 8)));
     
-    int scrolledPixels = detectVerticalScroll(*w);
+    memcpy(cl->realFrameBuffer, fbptr, (size_t)(csh * cl->scalingPaddedWidthInBytes));
     
-    if (scrolledPixels == 0)
-        return FALSE;
+    // no copyrect for regions <600px
+    if (*w < 600){
+        memcpy(cl->scalingFrameBufferCache, cl->realFrameBuffer, (size_t)(csh * cl->scalingPaddedWidthInBytes));
+        return 0;
+    }
+    int a = cl->modifiedRegion.data->numRects;
+    int b = cl->modifiedRegion.data->size;
 
+    // detect scroll
+    int scrolledPixels = detectVerticalScroll(fbptr, cl, cl->scalingPaddedWidthInBytes, csh, *x, *y, *w, *h - 5);
+    rfbDebugLog("scroll detected as: %d, width was %d, height was %d", scrolledPixels, *w, *h);
+    // cache current FB for next time.
+    memcpy(cl->scalingFrameBufferCache, cl->realFrameBuffer, (size_t)(csh * cl->scalingPaddedWidthInBytes));
+    
+    
+    if (scrolledPixels == 0 || scrolledPixels == 12345)
+        return FALSE;
+    
     rfbCopyRect cp;
     cp.srcX = Swap16IfLE(*x);
-    cp.srcY = Swap16IfLE(*y + scrolledPixels);
+    cp.srcY = (scrolledPixels > 0) ? Swap16IfLE(*y + scrolledPixels) : Swap16IfLE(*y);
     //rfbDebugLog("width: %d, height: %d, src_x: %d, src_y: %d", *w, *h, *x, *y + scrolledPixels);
-    if (!sendCopyRect(cl, *x, *y, *w, *h - abs(scrolledPixels), cp))
-        return FALSE;
+    if (scrolledPixels > 0){
+        if (!sendCopyRect(cl, *x, *y, *w, *h - abs(scrolledPixels) - 5, cp))
+            return FALSE;
+    }
+    else {
+        if (!sendCopyRect(cl, *x, *y + abs(scrolledPixels), *w, *h - abs(scrolledPixels) - 5, cp))
+            return FALSE;
+    }
     //if (!sendCopyRect(cl, *x, *y, *w, *h - abs(scrolledPixels), *x, *y + scrolledPixels))
     //    return FALSE;
     // Remove copyrected rectangle from modified region
     // *x does not change
     if(scrolledPixels>0){
-        *y = *y + *h - scrolledPixels;
+        *y = *y + *h - scrolledPixels - 5;
     }
     else {
         // *y remains the same
     }
     // *w does not change
-    *h = abs(scrolledPixels);
-
+    *h = abs(scrolledPixels) + 5
+    ;
+    
     return TRUE;
 }
 

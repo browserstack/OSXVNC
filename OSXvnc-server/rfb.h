@@ -181,8 +181,11 @@ typedef struct rfbClientRec {
     int	  scalingFactor;
 	char* screenBuffer;
     char* scalingFrameBuffer;
+    char* realFrameBuffer;
     int   scalingPaddedWidthInBytes;
 
+    char* scalingFrameBufferCache; // For copyrect, we need to cache the old FB, to compare with current.
+    
     /* statistics */
 
     int rfbBytesSent[MAX_ENCODINGS];
