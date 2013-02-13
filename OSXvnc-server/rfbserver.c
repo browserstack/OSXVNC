@@ -1121,77 +1121,86 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
     long BStotalRectangleSize = 0;
     double BSTimeToTakeScreenshot;
 
-    for (i = 0; i < REGION_NUM_RECTS(&updateRegion); i++) {
-        int x = REGION_RECTS(&updateRegion)[i].x1;
-        int y = REGION_RECTS(&updateRegion)[i].y1;
-        int w = REGION_RECTS(&updateRegion)[i].x2 - x;
-        int h = REGION_RECTS(&updateRegion)[i].y2 - y;
-
-        BStotalRectangleSize += w*h;
-        //rfbLog("rectangle size : %d", w*h);
-		BSTimeToTakeScreenshot = getMStime() * 1000;
-		rfbGetFramebufferUpdateInRect(x,y,w,h);
+    if (REGION_NUM_RECTS(&updateRegion) == 1){
+        //rfbDebugLog("exactly one");
+        int x = REGION_RECTS(&updateRegion)[0].x1;
+        int y = REGION_RECTS(&updateRegion)[0].y1;
+        int w = REGION_RECTS(&updateRegion)[0].x2 - x;
+        int h = REGION_RECTS(&updateRegion)[0].y2 - y;
+                    //rfbDebugLog("before: %d", REGION_NUM_RECTS(&updateRegion));
+        BSTimeToTakeScreenshot = getMStime() * 1000;
+        rfbGetFramebufferUpdateInRect(x,y,w,h);
         BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
-
-		// Refresh with latest pointer (should be "read-locked" throughout here with CG but I don't see that option)
-		if (cl->scalingFactor != 1)
-			CopyScalingRect( cl, &x, &y, &w, &h, TRUE);
-		else 
-			cl->scalingFrameBuffer = cl->screenBuffer;
-		
-        cl->rfbRawBytesEquivalent += (sz_rfbFramebufferUpdateRectHeader
-                                      + w * (cl->format.bitsPerPixel / 8) * h);
         
-        // Process CopyRect first if client supports it
-        if (cl->useCopyRect == TRUE && cl->firstCopyRect == FALSE){
-            rfbSendRectEncodingCopyRect(cl, &x, &y, &w, &h); // Sending in pointers, because copyrect removes the necessity of processing certain regions.
+        if(cl->useCopyRect == TRUE){
+            rfbSendRectEncodingCopyRect(cl, x, y, w, h, &updateRegion); // Sending in pointer to updateregion, because copyrect removes the necessity of processing certain regions.
         }
-        else
-        {
-            cl->firstCopyRect = FALSE;
-        }
+        rfbDebugLog("after: %d", REGION_NUM_RECTS(&updateRegion));
+        // Now updateRegion has changed, it has only rectangles which should be sent via other encodings.
+        for (i = 0; i < REGION_NUM_RECTS(&updateRegion); i++) {
 
-        switch (cl->preferredEncoding) {
-            case rfbEncodingRaw:
-                if (!rfbSendRectEncodingRaw(cl, x, y, w, h)) {
-                    return FALSE;
-                }
-                break;
-            case rfbEncodingRRE:
-                if (!rfbSendRectEncodingRRE(cl, x, y, w, h)) {
-                    return FALSE;
-                }
-                break;
-            case rfbEncodingCoRRE:
-                if (!rfbSendRectEncodingCoRRE(cl, x, y, w, h)) {
-                    return FALSE;
-                }
-                break;
-            case rfbEncodingHextile:
-                if (!rfbSendRectEncodingHextile(cl, x, y, w, h)) {
-                    return FALSE;
-                }
-                break;
-            case rfbEncodingZlib:
-                if (!rfbSendRectEncodingZlib(cl, x, y, w, h)) {
-                    return FALSE;
-                }
-                break;
-            case rfbEncodingTight:
-                if (!rfbSendRectEncodingTight(cl, x, y, w, h)) {
-                    return FALSE;
-                }
-                break;
-            case rfbEncodingZlibHex:
-                if (!rfbSendRectEncodingZlibHex(cl, x, y, w, h)) {
-                    return FALSE;
-                }
-                break;
-            case rfbEncodingZRLE:
-                if (!rfbSendRectEncodingZRLE(cl, x, y, w, h)) {
-                    return FALSE;
-                }
-                break;
+            int x = REGION_RECTS(&updateRegion)[i].x1;
+            int y = REGION_RECTS(&updateRegion)[i].y1;
+            int w = REGION_RECTS(&updateRegion)[i].x2 - x;
+            int h = REGION_RECTS(&updateRegion)[i].y2 - y;
+            rfbDebugLog("for tight %d %d %d %d",x,y,w,h);
+            BStotalRectangleSize += w*h;
+            //rfbLog("rectangle size : %d", w*h);
+            //BSTimeToTakeScreenshot = getMStime() * 1000;
+            //rfbGetFramebufferUpdateInRect(x,y,w,h);
+            //BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
+            
+            // Refresh with latest pointer (should be "read-locked" throughout here with CG but I don't see that option)
+            if (cl->scalingFactor != 1)
+                CopyScalingRect( cl, &x, &y, &w, &h, TRUE);
+            else
+                cl->scalingFrameBuffer = cl->screenBuffer;
+            
+            cl->rfbRawBytesEquivalent += (sz_rfbFramebufferUpdateRectHeader
+                                          + w * (cl->format.bitsPerPixel / 8) * h);
+            switch (cl->preferredEncoding) {
+                case rfbEncodingRaw:
+                    if (!rfbSendRectEncodingRaw(cl, x, y, w, h)) {
+                        return FALSE;
+                    }
+                    break;
+                case rfbEncodingRRE:
+                    if (!rfbSendRectEncodingRRE(cl, x, y, w, h)) {
+                        return FALSE;
+                    }
+                    break;
+                case rfbEncodingCoRRE:
+                    if (!rfbSendRectEncodingCoRRE(cl, x, y, w, h)) {
+                        return FALSE;
+                    }
+                    break;
+                case rfbEncodingHextile:
+                    if (!rfbSendRectEncodingHextile(cl, x, y, w, h)) {
+                        return FALSE;
+                    }
+                    break;
+                case rfbEncodingZlib:
+                    if (!rfbSendRectEncodingZlib(cl, x, y, w, h)) {
+                        return FALSE;
+                    }
+                    break;
+                case rfbEncodingTight:
+                    if (!rfbSendRectEncodingTight(cl, x, y, w, h)) {
+                        return FALSE;
+                    }
+                    break;
+                case rfbEncodingZlibHex:
+                    if (!rfbSendRectEncodingZlibHex(cl, x, y, w, h)) {
+                        return FALSE;
+                    }
+                    break;
+                case rfbEncodingZRLE:
+                    if (!rfbSendRectEncodingZRLE(cl, x, y, w, h)) {
+                        return FALSE;
+                    }
+                    break;
+            }
+            
         }
     }
 

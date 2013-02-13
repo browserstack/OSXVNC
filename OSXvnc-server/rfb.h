@@ -608,7 +608,7 @@ extern Bool rfbSendRectEncodingZlib(rfbClientPtr cl, int x, int y, int w,
 
 /* copyrect.c */
 
-extern Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int* x, int* y, int* w, int* h);
+extern Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int x, int y, int w, int h, RegionPtr updateRegion);
 
 /* tight.c */
 

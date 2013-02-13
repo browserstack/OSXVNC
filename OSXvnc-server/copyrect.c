@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <pthread.h>
+#include <stdlib.h>
 #include "rfb.h"
 
 #define DEBUG_MASK_COPYRECT FALSE
@@ -53,9 +54,9 @@ static int detectVerticalScroll(char * currentFb, rfbClientPtr cl, int fbWidthBy
                     //}
                 }
             }
-            if(x==0)
+            if(x==0){
                 rfbDebugLog("masked scroll: %d",testScroll);
-            //return testScroll;
+                return 0;}
             x=0;
             for(int i=0;i<modifiedHeight - testScroll;i++){
                 if (x==0){
@@ -166,28 +167,31 @@ static Bool sendCopyRect(rfbClientPtr cl, int x, int y, int w, int h, rfbCopyRec
  *
  */
 
-Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int* x, int* y, int* w, int* h)
+Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int x, int y, int w, int h, RegionPtr updateRegion)
 {
     const unsigned long csh = (rfbScreen.height+cl->scalingFactor-1)/ cl->scalingFactor;
     const unsigned long csw = (rfbScreen.width +cl->scalingFactor-1)/ cl->scalingFactor;
-    
     // get current FB
     char *fbptr = (cl->scalingFrameBuffer + (cl->scalingPaddedWidthInBytes * 0)
                    + (0 * (rfbScreen.bitsPerPixel / 8)));
     
     memcpy(cl->realFrameBuffer, fbptr, (size_t)(csh * cl->scalingPaddedWidthInBytes));
     
-    // no copyrect for regions <600px
-    if (*w < 600){
+    // no copyrect for regions <600px width, 40 px height
+    if (w < 600 || cl->firstCopyRect){
+        //for(int i = y; i < y+h; i++){
+        //    memcpy(cl->scalingFrameBufferCache + x * rfbScreen.bitsPerPixel/8 + i * cl->scalingPaddedWidthInBytes, cl->realFrameBuffer + x * rfbScreen.bitsPerPixel/8 + i * cl->scalingPaddedWidthInBytes, (size_t)(w * rfbScreen.bitsPerPixel/8));
+        //}
+        rfbDebugLog("chota update %d %d %d %d", x,y,w,h);
         memcpy(cl->scalingFrameBufferCache, cl->realFrameBuffer, (size_t)(csh * cl->scalingPaddedWidthInBytes));
+        //rfbDebugLog("fcr: %d %d %d %d", x,y,w,h);
+        cl->firstCopyRect = FALSE;
         return 0;
     }
-    int a = cl->modifiedRegion.data->numRects;
-    int b = cl->modifiedRegion.data->size;
 
     // detect scroll
-    int scrolledPixels = detectVerticalScroll(fbptr, cl, cl->scalingPaddedWidthInBytes, csh, *x, *y, *w, *h - 5);
-    rfbDebugLog("scroll detected as: %d, width was %d, height was %d", scrolledPixels, *w, *h);
+    int scrolledPixels = detectVerticalScroll(fbptr, cl, cl->scalingPaddedWidthInBytes, csh, x, y, w - 20, h - 5);
+    rfbDebugLog("scroll: %d, width: %d, height: %d", scrolledPixels, w, h);
     // cache current FB for next time.
     memcpy(cl->scalingFrameBufferCache, cl->realFrameBuffer, (size_t)(csh * cl->scalingPaddedWidthInBytes));
     
@@ -195,32 +199,34 @@ Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int* x, int* y, int* w, int* h
     if (scrolledPixels == 0 || scrolledPixels == 12345)
         return FALSE;
     
-    rfbCopyRect cp;
-    cp.srcX = Swap16IfLE(*x);
-    cp.srcY = (scrolledPixels > 0) ? Swap16IfLE(*y + scrolledPixels) : Swap16IfLE(*y);
-    //rfbDebugLog("width: %d, height: %d, src_x: %d, src_y: %d", *w, *h, *x, *y + scrolledPixels);
-    if (scrolledPixels > 0){
-        if (!sendCopyRect(cl, *x, *y, *w, *h - abs(scrolledPixels) - 5, cp))
-            return FALSE;
-    }
-    else {
-        if (!sendCopyRect(cl, *x, *y + abs(scrolledPixels), *w, *h - abs(scrolledPixels) - 5, cp))
-            return FALSE;
-    }
-    //if (!sendCopyRect(cl, *x, *y, *w, *h - abs(scrolledPixels), *x, *y + scrolledPixels))
-    //    return FALSE;
-    // Remove copyrected rectangle from modified region
-    // *x does not change
-    if(scrolledPixels>0){
-        *y = *y + *h - scrolledPixels - 5;
-    }
-    else {
-        // *y remains the same
-    }
-    // *w does not change
-    *h = abs(scrolledPixels) + 5
-    ;
     
+    rfbCopyRect cp;
+    cp.srcX = Swap16IfLE(x);
+    cp.srcY = (scrolledPixels > 0) ? Swap16IfLE(y + scrolledPixels) : Swap16IfLE(y);
+    //rfbDebugLog("width: %d, height: %d, src_x: %d, src_y: %d", w, h, x, y + scrolledPixels);
+    if (scrolledPixels > 0){
+        if (!sendCopyRect(cl, x, y, w - 20, h - abs(scrolledPixels) - 5, cp))
+            return FALSE;
+    }
+    else {
+        if (!sendCopyRect(cl, x, y + abs(scrolledPixels), w - 20, h - abs(scrolledPixels) - 5, cp))
+            return FALSE;
+    }
+
+    // Remove copyrected rectangle from modified region
+    xRectangle copyRects[1];
+    
+    copyRects[0].x = x;
+    copyRects[0].width = w - 20;
+    copyRects[0].height = h - 5 - abs(scrolledPixels);
+    if(scrolledPixels > 0){
+        copyRects[0].y = y;
+    }
+    else{
+        copyRects[0].y = y + abs(scrolledPixels);
+    }
+
+    REGION_SUBTRACT(pScreen, updateRegion, updateRegion, RECTS_TO_REGION(pScreen, 1, copyRects, CT_NONE));
     return TRUE;
 }
 
