@@ -813,7 +813,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
         {
             RegionRec tmpRegion;
             BoxRec box;
-
+            rfbDebugLog("got FBU req");
             if ((n = ReadExact(cl, ((char *)&msg) + 1,
                                sz_rfbFramebufferUpdateRequestMsg-1)) <= 0) {
                 if (n != 0)
@@ -1013,6 +1013,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
  */
 
 Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
+    rfbDebugLog("starting send fbu");
     int i;
     int nUpdateRegionRects = 0;
     Bool sendRichCursorEncoding = FALSE;
@@ -1122,12 +1123,10 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
     double BSTimeToTakeScreenshot;
 
     if (REGION_NUM_RECTS(&updateRegion) == 1){
-        //rfbDebugLog("exactly one");
         int x = REGION_RECTS(&updateRegion)[0].x1;
         int y = REGION_RECTS(&updateRegion)[0].y1;
         int w = REGION_RECTS(&updateRegion)[0].x2 - x;
         int h = REGION_RECTS(&updateRegion)[0].y2 - y;
-                    //rfbDebugLog("before: %d", REGION_NUM_RECTS(&updateRegion));
         BSTimeToTakeScreenshot = getMStime() * 1000;
         rfbGetFramebufferUpdateInRect(x,y,w,h);
         BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
@@ -1135,7 +1134,7 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
         if(cl->useCopyRect == TRUE){
             rfbSendRectEncodingCopyRect(cl, x, y, w, h, &updateRegion); // Sending in pointer to updateregion, because copyrect removes the necessity of processing certain regions.
         }
-        rfbDebugLog("after: %d", REGION_NUM_RECTS(&updateRegion));
+    }
         // Now updateRegion has changed, it has only rectangles which should be sent via other encodings.
         for (i = 0; i < REGION_NUM_RECTS(&updateRegion); i++) {
 
@@ -1146,9 +1145,9 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
             rfbDebugLog("for tight %d %d %d %d",x,y,w,h);
             BStotalRectangleSize += w*h;
             //rfbLog("rectangle size : %d", w*h);
-            //BSTimeToTakeScreenshot = getMStime() * 1000;
-            //rfbGetFramebufferUpdateInRect(x,y,w,h);
-            //BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
+            BSTimeToTakeScreenshot = getMStime() * 1000;
+            rfbGetFramebufferUpdateInRect(x,y,w,h);
+            BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
             
             // Refresh with latest pointer (should be "read-locked" throughout here with CG but I don't see that option)
             if (cl->scalingFactor != 1)
@@ -1202,7 +1201,6 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
             }
             
         }
-    }
 
     //rfbLog("[BrowserStack] Pushed %d rectangles!", REGION_NUM_RECTS(&updateRegion));
     //if (BSkeyPressed) {

@@ -13,6 +13,9 @@
 
 #define DEBUG_MASK_COPYRECT FALSE
 
+int tallestMatchStart = 0;
+int tallestMatchHeight = 0;
+
 /*
  * Returns the pixel offset by which a vertical scroll has taken place
  * Returns zero if no scroll could be detected
@@ -76,29 +79,69 @@ static int detectVerticalScroll(char * currentFb, rfbClientPtr cl, int fbWidthBy
         modifiedWidth--;
         modifiedWidth--;
         modRegionX++;
+        tallestMatchStart = 0;
+        tallestMatchHeight = 0;
+        int testMatchStart;
+        int testMatchHeight;
+        int bestScroll = 0;
+        int x;
         for(testScroll=0;testScroll<=modifiedHeight-40;testScroll++){
-            int x=0;
+            x=0;
+            testMatchHeight = 0;
+            testMatchStart = modRegionY;
             //
+            Bool testFlag = FALSE;
             for(int i=0;i<modifiedHeight - testScroll;i++){
+                x = memcmp(cachedFb + modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + ((i+testScroll) * fbWidthBytes), currentFb+ modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + i * fbWidthBytes, (size_t)(bytesPerPixel * modifiedWidth));
+                
                 if (x==0){
-                    x = memcmp(cachedFb + modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + ((i+testScroll) * fbWidthBytes), currentFb+ modRegionY * fbWidthBytes + modRegionX * bytesPerPixel + i * fbWidthBytes, (size_t)(bytesPerPixel * modifiedWidth));
+                    testMatchHeight = testFlag ? testMatchHeight + 1 : 1;
+                    testMatchStart = testFlag ? testMatchStart : modRegionY + i;
+                    if (testMatchHeight>tallestMatchHeight){
+                        tallestMatchStart = testMatchStart;
+                        tallestMatchHeight = testMatchHeight;
+                        bestScroll = testScroll;
+                    }
+                    testFlag = TRUE;
+                }
+                else {
+                    testFlag = FALSE;
                 }
             }
-            if(x==0){
-                if (testScroll != 0)
-                    return testScroll;
+            if(tallestMatchHeight > modifiedHeight * 3/4){
+                if (bestScroll != 0)
+                    return bestScroll;
                 else
                     return 12345;
             }
-            
+        }
+        for(testScroll=0;testScroll<=modifiedHeight-40;testScroll++){
             x=0;
+            testMatchHeight = 0;
+            testMatchStart = modRegionY;
+            Bool testFlag = FALSE;
             for(int i=0;i<modifiedHeight - testScroll;i++){
+                x = memcmp(cachedFb + modRegionY * fbWidthBytes + i * fbWidthBytes + modRegionX * bytesPerPixel, currentFb + ((i+testScroll) * fbWidthBytes) + modRegionY * fbWidthBytes + modRegionX * bytesPerPixel, (size_t)(bytesPerPixel * modifiedWidth));
                 if (x==0){
-                    x = memcmp(cachedFb + modRegionY * fbWidthBytes + i * fbWidthBytes + modRegionX * bytesPerPixel, currentFb + ((i+testScroll) * fbWidthBytes) + modRegionY * fbWidthBytes + modRegionX * bytesPerPixel, (size_t)(bytesPerPixel * modifiedWidth));
+                    testMatchHeight = testFlag ? testMatchHeight + 1 : 1;
+                    testMatchStart = testFlag ? testMatchStart : modRegionY + i + testScroll;
+                    if (testMatchHeight>tallestMatchHeight){
+                        tallestMatchStart = testMatchStart;
+                        tallestMatchHeight = testMatchHeight;
+                        bestScroll = testScroll;
+                    }
+                    testFlag = TRUE;
+                }
+                else {
+                    testFlag = FALSE;
                 }
             }
-            if(x==0)
-                return (-1 * testScroll);
+            if(tallestMatchHeight > modifiedHeight * 3/4){
+                if (bestScroll != 0)
+                    return -1 * bestScroll;
+                else
+                    return 12345;
+            }
         }
     }
     ///*///
@@ -176,19 +219,19 @@ Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int x, int y, int w, int h, Re
                    + (0 * (rfbScreen.bitsPerPixel / 8)));
     
     memcpy(cl->realFrameBuffer, fbptr, (size_t)(csh * cl->scalingPaddedWidthInBytes));
-    
+    rfbDebugLog("RECD update %d %d %d %d", x,y,w,h);
     // no copyrect for regions <600px width, 40 px height
-    if (w < 600 || cl->firstCopyRect){
+    if (w < 600 || cl->firstCopyRect || h < 60){
         //for(int i = y; i < y+h; i++){
         //    memcpy(cl->scalingFrameBufferCache + x * rfbScreen.bitsPerPixel/8 + i * cl->scalingPaddedWidthInBytes, cl->realFrameBuffer + x * rfbScreen.bitsPerPixel/8 + i * cl->scalingPaddedWidthInBytes, (size_t)(w * rfbScreen.bitsPerPixel/8));
         //}
-        rfbDebugLog("chota update %d %d %d %d", x,y,w,h);
+        //rfbDebugLog("chota update %d %d %d %d", x,y,w,h);
         memcpy(cl->scalingFrameBufferCache, cl->realFrameBuffer, (size_t)(csh * cl->scalingPaddedWidthInBytes));
         //rfbDebugLog("fcr: %d %d %d %d", x,y,w,h);
         cl->firstCopyRect = FALSE;
         return 0;
     }
-
+    
     // detect scroll
     int scrolledPixels = detectVerticalScroll(fbptr, cl, cl->scalingPaddedWidthInBytes, csh, x, y, w - 20, h - 5);
     rfbDebugLog("scroll: %d, width: %d, height: %d", scrolledPixels, w, h);
@@ -202,30 +245,19 @@ Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int x, int y, int w, int h, Re
     
     rfbCopyRect cp;
     cp.srcX = Swap16IfLE(x);
-    cp.srcY = (scrolledPixels > 0) ? Swap16IfLE(y + scrolledPixels) : Swap16IfLE(y);
     //rfbDebugLog("width: %d, height: %d, src_x: %d, src_y: %d", w, h, x, y + scrolledPixels);
-    if (scrolledPixels > 0){
-        if (!sendCopyRect(cl, x, y, w - 20, h - abs(scrolledPixels) - 5, cp))
-            return FALSE;
-    }
-    else {
-        if (!sendCopyRect(cl, x, y + abs(scrolledPixels), w - 20, h - abs(scrolledPixels) - 5, cp))
-            return FALSE;
-    }
-
+    cp.srcY = Swap16IfLE(tallestMatchStart + scrolledPixels);
+    if (!sendCopyRect(cl, x, tallestMatchStart, w - 20, tallestMatchHeight, cp))
+        return FALSE;
+    
     // Remove copyrected rectangle from modified region
     xRectangle copyRects[1];
     
     copyRects[0].x = x;
     copyRects[0].width = w - 20;
-    copyRects[0].height = h - 5 - abs(scrolledPixels);
-    if(scrolledPixels > 0){
-        copyRects[0].y = y;
-    }
-    else{
-        copyRects[0].y = y + abs(scrolledPixels);
-    }
-
+    copyRects[0].height = tallestMatchHeight;
+    copyRects[0].y = tallestMatchStart;
+    
     REGION_SUBTRACT(pScreen, updateRegion, updateRegion, RECTS_TO_REGION(pScreen, 1, copyRects, CT_NONE));
     return TRUE;
 }
