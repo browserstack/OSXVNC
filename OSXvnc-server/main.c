@@ -413,7 +413,7 @@ static void *clientOutput(void *data) {
             rfbLog("Error Showing Cursor %d", displayErr);
         */
 
-        REGION_UNINIT(&hackScreen, &updateRegion);
+        //REGION_UNINIT(&hackScreen, &updateRegion); // I know you hate me, but believe me, I'm helping you not crash.
         pthread_mutex_unlock(&cl->updateMutex);
     }
 

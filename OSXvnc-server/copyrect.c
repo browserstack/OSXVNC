@@ -219,7 +219,7 @@ Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int x, int y, int w, int h, Re
                    + (0 * (rfbScreen.bitsPerPixel / 8)));
     
     memcpy(cl->realFrameBuffer, fbptr, (size_t)(csh * cl->scalingPaddedWidthInBytes));
-    rfbDebugLog("RECD update %d %d %d %d", x,y,w,h);
+    rfbDebugLog("TRYING COPYRECT ON %d %d %d %d", x,y,w,h);
     // no copyrect for regions <600px width, 40 px height
     if (w < 600 || cl->firstCopyRect || h < 60){
         //for(int i = y; i < y+h; i++){

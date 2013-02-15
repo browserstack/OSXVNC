@@ -1122,11 +1122,15 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
     long BStotalRectangleSize = 0;
     double BSTimeToTakeScreenshot;
 
-    if (REGION_NUM_RECTS(&updateRegion) == 1){
-        int x = REGION_RECTS(&updateRegion)[0].x1;
-        int y = REGION_RECTS(&updateRegion)[0].y1;
-        int w = REGION_RECTS(&updateRegion)[0].x2 - x;
-        int h = REGION_RECTS(&updateRegion)[0].y2 - y;
+    RegionRec tempUpdateRegion;
+    REGION_INIT(pScreen, &tempUpdateRegion, NullBox, 0);
+    REGION_COPY(pScreen, &tempUpdateRegion, &updateRegion);
+    for (int i = 0; i < REGION_NUM_RECTS(&tempUpdateRegion); i++){
+
+        int x = REGION_RECTS(&tempUpdateRegion)[i].x1;
+        int y = REGION_RECTS(&tempUpdateRegion)[i].y1;
+        int w = REGION_RECTS(&tempUpdateRegion)[i].x2 - x;
+        int h = REGION_RECTS(&tempUpdateRegion)[i].y2 - y;
         BSTimeToTakeScreenshot = getMStime() * 1000;
         rfbGetFramebufferUpdateInRect(x,y,w,h);
         BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
@@ -1135,6 +1139,8 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
             rfbSendRectEncodingCopyRect(cl, x, y, w, h, &updateRegion); // Sending in pointer to updateregion, because copyrect removes the necessity of processing certain regions.
         }
     }
+    REGION_UNINIT(pScreen, &tempUpdateRegion);
+    
         // Now updateRegion has changed, it has only rectangles which should be sent via other encodings.
         for (i = 0; i < REGION_NUM_RECTS(&updateRegion); i++) {
 
@@ -1145,9 +1151,6 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
             rfbDebugLog("for tight %d %d %d %d",x,y,w,h);
             BStotalRectangleSize += w*h;
             //rfbLog("rectangle size : %d", w*h);
-            BSTimeToTakeScreenshot = getMStime() * 1000;
-            rfbGetFramebufferUpdateInRect(x,y,w,h);
-            BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
             
             // Refresh with latest pointer (should be "read-locked" throughout here with CG but I don't see that option)
             if (cl->scalingFactor != 1)
