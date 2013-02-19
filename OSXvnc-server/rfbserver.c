@@ -1121,7 +1121,8 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
 	cl->screenBuffer = rfbGetFramebuffer();
     long BStotalRectangleSize = 0;
     double BSTimeToTakeScreenshot;
-
+    double BSCopyRectTimeStart;
+    double BSCopyRectTime = 0;
     RegionRec tempUpdateRegion;
     REGION_INIT(pScreen, &tempUpdateRegion, NullBox, 0);
     REGION_COPY(pScreen, &tempUpdateRegion, &updateRegion);
@@ -1136,7 +1137,9 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
         BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
         
         if(cl->useCopyRect == TRUE){
+            BSCopyRectTimeStart = getMStime() * 1000;
             rfbSendRectEncodingCopyRect(cl, x, y, w, h, &updateRegion); // Sending in pointer to updateregion, because copyrect removes the necessity of processing certain regions.
+            BSCopyRectTime += getMStime() * 1000 - BSCopyRectTimeStart;
         }
     }
     REGION_UNINIT(pScreen, &tempUpdateRegion);
@@ -1210,7 +1213,7 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
     if (BStotalRectangleSize > 0) {
         double minuteDifference1 = getMStime() * 1000 - BSkeyPressTime;
         if (BStotalRectangleSize > 9000) {
-            rfbLog("[BrowserStack] %d, %d, %f, %f, %f, %d, %f, %f, %f, %f, %d, %d", REGION_NUM_RECTS(&updateRegion), BStotalRectangleSize, minuteDifference, BSTimeToTakeScreenshot, (minuteDifference1 - minuteDifference - BSSendDataTime), (cl->rfbBytesSent[rfbEncodingTight] - BSDataSize), BSJpegProcessTime, BSSendDataTime, BSCompressionTime, BSSendRectTime, BSnumberOfJpegRectangles, BSnumberOfSingleRect);
+            rfbLog("[BrowserStack] %d, %d, %f, %f, %f, %d, %f, %f, %f, %f, %d, %d, %d", REGION_NUM_RECTS(&updateRegion), BStotalRectangleSize, minuteDifference, BSTimeToTakeScreenshot, (minuteDifference1 - minuteDifference - BSSendDataTime), (cl->rfbBytesSent[rfbEncodingTight] - BSDataSize), BSJpegProcessTime, BSSendDataTime, BSCompressionTime, BSSendRectTime, BSnumberOfJpegRectangles, BSnumberOfSingleRect, BSCopyRectTime);
         }
     }
     //}
