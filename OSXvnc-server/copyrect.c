@@ -108,7 +108,7 @@ static int detectVerticalScroll(char * currentFb, rfbClientPtr cl, int fbWidthBy
                     testFlag = FALSE;
                 }
             }
-            if(tallestMatchHeight > modifiedHeight * 3/4){
+            if(tallestMatchHeight > modifiedHeight * 1/4){
                 if (bestScroll != 0)
                     return bestScroll;
                 else
@@ -136,7 +136,7 @@ static int detectVerticalScroll(char * currentFb, rfbClientPtr cl, int fbWidthBy
                     testFlag = FALSE;
                 }
             }
-            if(tallestMatchHeight > modifiedHeight * 3/4){
+            if(tallestMatchHeight > modifiedHeight * 1/4){
                 if (bestScroll != 0)
                     return -1 * bestScroll;
                 else
