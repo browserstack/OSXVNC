@@ -239,9 +239,11 @@ Bool rfbSendRectEncodingCopyRect(rfbClientPtr cl, int x, int y, int w, int h, Re
     memcpy(cl->scalingFrameBufferCache, cl->realFrameBuffer, (size_t)(csh * cl->scalingPaddedWidthInBytes));
     
     
-    if (scrolledPixels == 0 || scrolledPixels == 12345)
+    if (scrolledPixels == 0)
         return FALSE;
     
+    if (scrolledPixels == 12345)
+        scrolledPixels = 0;
     
     rfbCopyRect cp;
     cp.srcX = Swap16IfLE(x);
