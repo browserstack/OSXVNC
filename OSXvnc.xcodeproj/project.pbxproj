@@ -1296,6 +1296,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				"GCC_OPTIMIZATION_LEVEL[arch=*]" = 0;
 				PRODUCT_NAME = "Vine Server Package";
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -1306,6 +1307,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				PRODUCT_NAME = "Vine Server Package";
+				SDKROOT = macosx10.6;
 			};
 			name = Deployment;
 		};
@@ -1320,7 +1322,7 @@
 				HEADER_SEARCH_PATHS = "osxvnc-server";
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = rdr;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -1334,7 +1336,7 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "osxvnc-server";
 				PRODUCT_NAME = rdr;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.6;
 				SEPARATE_STRIP = NO;
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
@@ -1346,7 +1348,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_VERSION = "";
 				PRODUCT_NAME = jpg;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -1356,7 +1358,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_VERSION = "";
 				PRODUCT_NAME = jpg;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.6;
 			};
 			name = Deployment;
 		};
@@ -1374,7 +1376,7 @@
 					libjpeg,
 				);
 				PRODUCT_NAME = "OSXvnc-server";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -1393,7 +1395,7 @@
 				);
 				MACH_O_TYPE = mh_execute;
 				PRODUCT_NAME = "OSXvnc-server";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.6;
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Deployment;
@@ -1403,7 +1405,7 @@
 			buildSettings = {
 				GCC_VERSION = "";
 				PRODUCT_NAME = storepasswd;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -1413,7 +1415,7 @@
 				CODE_SIGN_IDENTITY = "";
 				GCC_VERSION = "";
 				PRODUCT_NAME = storepasswd;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.6;
 			};
 			name = Deployment;
 		};
