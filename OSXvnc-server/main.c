@@ -574,7 +574,7 @@ static int frameBufferBytesPerRow = 0;
 static int frameBufferBitsPerPixel = 0;
 
 char *rfbGetFramebuffer(void) {
-	if (floor(NSAppKitVersionNumber) > floor(NSAppKitVersionNumber10_6)) {
+	if (floor(NSAppKitVersionNumber) > floor(NSAppKitVersionNumber)) {
 		if (!frameBufferData) {
 			CGDirectDisplayID mainDisplayID = CGMainDisplayID();	
 			CGImageRef imageRef = CGDisplayCreateImage(mainDisplayID);	
@@ -661,7 +661,7 @@ static bool rfbScreenInit(void) {
 	rfbScreen.height = CGDisplayPixelsHigh(displayID);
 	rfbScreen.bitsPerPixel = bitsPerPixelForDisplay(displayID);
 	rfbScreen.depth = samplesPerPixel * bitsPerSample;
-    if (floor(NSAppKitVersionNumber) > floor(NSAppKitVersionNumber10_6)) {
+    if (floor(NSAppKitVersionNumber) > floor(NSAppKitVersionNumber)) {
         rfbScreen.paddedWidthInBytes = rfbScreen.width*rfbScreen.bitsPerPixel/8;
     }
     else {

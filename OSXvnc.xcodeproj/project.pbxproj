@@ -1290,6 +1290,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = "Vine Server Package";
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -1300,6 +1301,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PRODUCT_NAME = "Vine Server Package";
+				SDKROOT = macosx10.6;
 			};
 			name = Deployment;
 		};
@@ -1312,6 +1314,7 @@
 				HEADER_SEARCH_PATHS = "osxvnc-server";
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = rdr;
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -1323,6 +1326,7 @@
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				HEADER_SEARCH_PATHS = "osxvnc-server";
 				PRODUCT_NAME = rdr;
+				SDKROOT = macosx10.6;
 				SEPARATE_STRIP = NO;
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
@@ -1332,6 +1336,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = jpg;
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -1339,6 +1344,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = jpg;
+				SDKROOT = macosx10.6;
 			};
 			name = Deployment;
 		};
@@ -1354,6 +1360,7 @@
 					libjpeg,
 				);
 				PRODUCT_NAME = "OSXvnc-server";
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -1371,6 +1378,7 @@
 				);
 				MACH_O_TYPE = mh_execute;
 				PRODUCT_NAME = "OSXvnc-server";
+				SDKROOT = macosx10.6;
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Deployment;
@@ -1379,6 +1387,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = storepasswd;
+				SDKROOT = macosx10.6;
 			};
 			name = Development;
 		};
@@ -1387,6 +1396,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				PRODUCT_NAME = storepasswd;
+				SDKROOT = macosx10.6;
 			};
 			name = Deployment;
 		};
@@ -1396,6 +1406,7 @@
 				INFOPLIST_FILE = "VineServer-Info.plist";
 				INSTALL_PATH = "/Vine Server/";
 				PRODUCT_NAME = "Vine Server";
+				SDKROOT = macosx10.6;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Development;
@@ -1410,6 +1421,7 @@
 				INFOPLIST_FILE = "VineServer-Info.plist";
 				INSTALL_PATH = "/Vine Server/";
 				PRODUCT_NAME = "Vine Server";
+				SDKROOT = macosx10.6;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Deployment;
