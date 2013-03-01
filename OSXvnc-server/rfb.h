@@ -102,8 +102,13 @@ typedef struct rfbClientRec {
     char *host;
     // Version
     int major, minor;
+    
+    /*Logging in files */
+    FILE *fp;
 
     pthread_mutex_t outputMutex;
+    /* for profiling connect times*/
+    //struct timeval tv;
 
                                 /* Possible client states: */
     enum client_state state;

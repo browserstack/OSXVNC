@@ -44,6 +44,7 @@
 //char updateBuf[UPDATE_BUF_SIZE];
 //int ublen;
 
+
 rfbClientPtr pointerClient = NULL;  /* Mutex for pointer events with buttons down*/
 
 rfbClientPtr rfbClientHead;  /* tight encoding -- GetClient() in tight.c accesses this list, so make it global */
@@ -217,6 +218,11 @@ rfbClientPtr rfbNewClient(int sock) {
     int i;
 	unsigned int addrlen;
 	int bitsPerSample;
+    
+    /*clock while creating socket*/
+    
+    
+    //clock_t start = clock();
 
     /*
      {
@@ -471,6 +477,9 @@ void rfbProcessClientMessage(rfbClientPtr cl) {
  */
 
 void rfbProcessClientProtocolVersion(rfbClientPtr cl) {
+    
+    rfbLog("time_taken Time for client to send the protocol version is %f",getMStime()*1000);
+    rfbLog("");
     rfbProtocolVersionMsg pv;
     int n;
     char failureReason[256];
@@ -541,6 +550,10 @@ void rfbClientConnFailed(rfbClientPtr cl, char *reason) {
  */
 
 void rfbProcessClientInitMessage(rfbClientPtr cl) {
+    
+    /*time taken for the client to send init msg */
+    rfbLog("time_taken Time at which client send init msg is %f",getMStime()*1000);
+    
     rfbClientInitMsg ci;
     char buf[256];
     rfbServerInitMsg *si = (rfbServerInitMsg *)buf;
@@ -615,6 +628,7 @@ void rfbProcessClientInitMessage(rfbClientPtr cl) {
  */
 
 void rfbProcessClientNormalMessage(rfbClientPtr cl) {
+    
     int n;
     rfbClientToServerMsg msg;
     char *str;
@@ -630,6 +644,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
 
         case rfbSetPixelFormat:
 		{
+            rfbLog("time_taken Time at which client send rfbSetPixelFormat msg is %d",getMStime()*1000);
             if ((n = ReadExact(cl, ((char *)&msg) + 1,
                                sz_rfbSetPixelFormatMsg - 1)) <= 0) {
                 if (n != 0)
@@ -659,6 +674,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
 
         case rfbFixColourMapEntries:
 		{
+            rfbLog("time_taken Time at which client send rfbFixColorMapEntries msg is %f",getMStime()*1000);
             if ((n = ReadExact(cl, ((char *)&msg) + 1,
                                sz_rfbFixColourMapEntriesMsg - 1)) <= 0) {
                 if (n != 0)
@@ -673,6 +689,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
 		}
 			
         case rfbSetEncodings: {
+            rfbLog("time_taken Time at which client send rfbSetEncodings msg is %f",getMStime()*1000);
             int i;
             CARD32 enc;
 
@@ -804,6 +821,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
 
         case rfbFramebufferUpdateRequest:
         {
+            rfbLog("time_taken Time at which client asks for frame buffer update is %f",getMStime()*1000);
             RegionRec tmpRegion;
             BoxRec box;
 

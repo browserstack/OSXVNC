@@ -232,6 +232,7 @@ void rfbAuthNewClient(rfbClientPtr cl) {
 }
 
 void rfbProcessAuthVersion(rfbClientPtr cl) {
+    rfbLog("time_taken Time at which client sends its supported auth types is %f",getMStime()*1000);
     int n;
     CARD8 securityType;
 
@@ -290,6 +291,7 @@ void rfbProcessAuthVersion(rfbClientPtr cl) {
  */
 
 void rfbAuthProcessClientMessage(rfbClientPtr cl) {
+    rfbLog("time_taken Time at which client send its password is %f",getMStime()*1000);
     char *passwd;
     int i, n;
     CARD8 response[CHALLENGESIZE];
