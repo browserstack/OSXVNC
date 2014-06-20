@@ -861,6 +861,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
                 return;
 		}
         case rfbPointerEvent: {
+            rfbLog("[PRESSED] Mouse event is %d, %d, %d, %d", msg.pe.type, msg.pe.buttonMask, msg.pe.x, msg.pe.y);
             if (!cl->disableRemoteEvents)
                 cl->rfbPointerEventsRcvd++;
 
