@@ -1,0 +1,1139 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 47;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		ABA30D3D15BEE7310001BAE5 /* Vine Server Package */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = ABA30D4215BEE7670001BAE5 /* Build configuration list for PBXAggregateTarget "Vine Server Package" */;
+			buildPhases = (
+				ABA30D3C15BEE7310001BAE5 /* Build DMG */,
+			);
+			dependencies = (
+				ABA30D4115BEE7490001BAE5 /* PBXTargetDependency */,
+			);
+			name = "Vine Server Package";
+			productName = "Vine Server Package";
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		9199995B0B1135FF0099EA7A /* getMACAddress.c in Sources */ = {isa = PBXBuildFile; fileRef = 919999430B11348E0099EA7A /* getMACAddress.c */; };
+		AB25D81F08686B520065843D /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F57BB467027E036F014B5D3F /* Credits.rtf */; };
+		AB25D82008686B520065843D /* Vine Server Release Notes.rtf in Resources */ = {isa = PBXBuildFile; fileRef = AB541C2907A0264F00B63668 /* Vine Server Release Notes.rtf */; };
+		AB25D82108686B520065843D /* Copying.rtf in Resources */ = {isa = PBXBuildFile; fileRef = AB541C3B07A0273500B63668 /* Copying.rtf */; };
+		AB25D82208686B520065843D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = ABD7FE7E07AFF8B4004D0B81 /* Localizable.strings */; };
+		AB25D82608686B520065843D /* OSXvnc in Resources */ = {isa = PBXBuildFile; fileRef = ABCCC8B203D9C60A00A80117 /* OSXvnc */; };
+		AB25D82A08686B520065843D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
+		AB25D82B08686B520065843D /* VNCController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5456A2802FAD08901A80117 /* VNCController.m */; };
+		AB25D82E08686B520065843D /* NSAuthorization.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD8EC08058A0BD600C84739 /* NSAuthorization.m */; };
+		AB25D83008686B520065843D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		AB25D83108686B520065843D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABEE28F804C8745B00A80117 /* Security.framework */; };
+		AB25D895086870420065843D /* auth.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E01002F9812901A80186 /* auth.c */; };
+		AB25D896086870430065843D /* corre.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E01302F9812901A80186 /* corre.c */; };
+		AB25D897086870430065843D /* cutpaste.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E01402F9812901A80186 /* cutpaste.c */; };
+		AB25D898086870440065843D /* dimming.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E01502F9812901A80186 /* dimming.c */; };
+		AB25D899086870460065843D /* VNCServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F58DDDE8056A861001A8015E /* VNCServer.m */; };
+		AB25D89A086870490065843D /* mousecursor.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C9A8F1038C6F5D01A80117 /* mousecursor.c */; };
+		AB25D89B0868704A0065843D /* hextile.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E01602F9812901A80186 /* hextile.c */; };
+		AB25D89C0868704B0065843D /* kbdptr.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E03502F9812901A80186 /* kbdptr.c */; };
+		AB25D89E0868704C0065843D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E10E02F9812C01A80186 /* main.c */; };
+		AB25D89F0868704C0065843D /* miregion.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11002F9812C01A80186 /* miregion.c */; };
+		AB25D8A00868704D0065843D /* rfbserver.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11502F9812C01A80186 /* rfbserver.c */; };
+		AB25D8A10868704E0065843D /* rre.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11602F9812C01A80186 /* rre.c */; };
+		AB25D8A20868704E0065843D /* sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11702F9812C01A80186 /* sockets.c */; };
+		AB25D8A30868704F0065843D /* stats.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11802F9812C01A80186 /* stats.c */; };
+		AB25D8A5086870530065843D /* tight.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11D02F9812C01A80186 /* tight.c */; };
+		AB25D8A6086870540065843D /* translate.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11F02F9812C01A80186 /* translate.c */; };
+		AB25D8A7086870540065843D /* xalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E12002F9812C01A80186 /* xalloc.c */; };
+		AB25D8A8086870550065843D /* zlib.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E12102F9812C01A80186 /* zlib.c */; };
+		AB25D8A9086870550065843D /* zlibhex.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E12202F9812C01A80186 /* zlibhex.c */; };
+		AB25D8AA086870560065843D /* zrle.cc in Sources */ = {isa = PBXBuildFile; fileRef = F5C9B02C038DA64501A80117 /* zrle.cc */; };
+		AB25D8AC0868707C0065843D /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABF191B704E447A400A80117 /* Carbon.framework */; };
+		AB25D9400868707E0065843D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		AB25D992086877000065843D /* storepasswd.c in Sources */ = {isa = PBXBuildFile; fileRef = F538E11902F9812C01A80186 /* storepasswd.c */; };
+		AB25DA3B0868842E0065843D /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB25DA3A0868842E0065843D /* IOKit.framework */; };
+		AB25DA3D086884420065843D /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AB25DA3C086884420065843D /* libz.dylib */; };
+		AB3E27F80AF947FB004AF567 /* Vine Server.pdf in Resources */ = {isa = PBXBuildFile; fileRef = AB3E27F70AF947FB004AF567 /* Vine Server.pdf */; };
+		AB82605A08689AC00010AB63 /* storepasswd in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB82605708689AC00010AB63 /* storepasswd */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		AB82605E08689AC00010AB63 /* OSXvnc-server in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB82605B08689AC00010AB63 /* OSXvnc-server */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		AB95E3EE0FD4AA3800D063EC /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB95E3ED0FD4AA3700D063EC /* OpenGL.framework */; };
+		ABA7B3D60948CB5D00CD7499 /* d3des.c in Sources */ = {isa = PBXBuildFile; fileRef = ABA7B3D10948CB5D00CD7499 /* d3des.c */; };
+		ABA7B3D70948CB5D00CD7499 /* vncauth.c in Sources */ = {isa = PBXBuildFile; fileRef = ABA7B3D30948CB5D00CD7499 /* vncauth.c */; };
+		ABA7B5150949EB7E00CD7499 /* d3des.c in Sources */ = {isa = PBXBuildFile; fileRef = ABA7B3D10948CB5D00CD7499 /* d3des.c */; };
+		ABA7B51F0949EBBC00CD7499 /* vncauth.c in Sources */ = {isa = PBXBuildFile; fileRef = ABA7B3D30948CB5D00CD7499 /* vncauth.c */; };
+		ABA7B53F094A05BE00CD7499 /* FdInStream.cxx in Sources */ = {isa = PBXBuildFile; fileRef = F5C9B030038DA99401A80117 /* FdInStream.cxx */; };
+		ABA7B540094A05BF00CD7499 /* FdOutStream.cxx in Sources */ = {isa = PBXBuildFile; fileRef = F5C9B032038DA99401A80117 /* FdOutStream.cxx */; };
+		ABA7B543094A05C700CD7499 /* InStream.cxx in Sources */ = {isa = PBXBuildFile; fileRef = F5C9B035038DA99401A80117 /* InStream.cxx */; };
+		ABA7B544094A05C900CD7499 /* NullOutStream.cxx in Sources */ = {isa = PBXBuildFile; fileRef = F5C9B03A038DA99401A80117 /* NullOutStream.cxx */; };
+		ABA7B547094A05DE00CD7499 /* ZlibInStream.cxx in Sources */ = {isa = PBXBuildFile; fileRef = F5C9B03F038DA99401A80117 /* ZlibInStream.cxx */; };
+		ABA7B548094A05DF00CD7499 /* ZlibOutStream.cxx in Sources */ = {isa = PBXBuildFile; fileRef = F5C9B041038DA99401A80117 /* ZlibOutStream.cxx */; };
+		ABA7B560094A080200CD7499 /* librdr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABA7B52D094A053000CD7499 /* librdr.a */; };
+		ABA7B6D0094A170E00CD7499 /* vncauth.c in Sources */ = {isa = PBXBuildFile; fileRef = ABA7B3D30948CB5D00CD7499 /* vncauth.c */; };
+		ABA7B6D6094A171A00CD7499 /* d3des.c in Sources */ = {isa = PBXBuildFile; fileRef = ABA7B3D10948CB5D00CD7499 /* d3des.c */; };
+		ABDBE34715BA2A9D00558229 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = ABDBE34515BA2A9D00558229 /* MainMenu.xib */; };
+		ABFC222C0AF08CBA00BCE727 /* VineServer.icns in Resources */ = {isa = PBXBuildFile; fileRef = ABFC222B0AF08CBA00BCE727 /* VineServer.icns */; };
+		CA00814E121CA18D008B29B7 /* FdInStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B031038DA99401A80117 /* FdInStream.h */; };
+		CA008151121CA1C5008B29B7 /* Exception.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B02F038DA99401A80117 /* Exception.h */; };
+		CA008152121CA1D8008B29B7 /* FdOutStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B033038DA99401A80117 /* FdOutStream.h */; };
+		CA008153121CA1E1008B29B7 /* FixedMemOutStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B034038DA99401A80117 /* FixedMemOutStream.h */; };
+		CA008154121CA1E8008B29B7 /* InStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B036038DA99401A80117 /* InStream.h */; };
+		CA008155121CA1F3008B29B7 /* MemInStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B038038DA99401A80117 /* MemInStream.h */; };
+		CA008156121CA1F7008B29B7 /* MemOutStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B039038DA99401A80117 /* MemOutStream.h */; };
+		CA008157121CA1FC008B29B7 /* NullOutStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B03B038DA99401A80117 /* NullOutStream.h */; };
+		CA008158121CA200008B29B7 /* OutStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B03C038DA99401A80117 /* OutStream.h */; };
+		CA008159121CA204008B29B7 /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B03E038DA99401A80117 /* types.h */; };
+		CA00815A121CA207008B29B7 /* ZlibInStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B040038DA99401A80117 /* ZlibInStream.h */; };
+		CA00815B121CA20A008B29B7 /* ZlibOutStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C9B042038DA99401A80117 /* ZlibOutStream.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AB25DA5C08688EE80065843D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AB25D98F086876B80065843D;
+			remoteInfo = storepasswd;
+		};
+		AB52324608689C02003F66AC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AB25D88E08686FC40065843D;
+			remoteInfo = "OSXvnc-server";
+		};
+		ABA30D4015BEE7490001BAE5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AB25D81508686B520065843D;
+			remoteInfo = "Vine Server";
+		};
+		ABA7B55A094A07AE00CD7499 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ABA7B52C094A053000CD7499;
+			remoteInfo = rdr;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AB25D83208686B520065843D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				AB82605A08689AC00010AB63 /* storepasswd in CopyFiles */,
+				AB82605E08689AC00010AB63 /* OSXvnc-server in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		096B69DC0097995A7F000001 /* OSXvnc.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = OSXvnc.html; sourceTree = "<group>"; };
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		919999420B11348C0099EA7A /* getMACAddress.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = getMACAddress.h; sourceTree = "<group>"; };
+		919999430B11348E0099EA7A /* getMACAddress.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 30; path = getMACAddress.c; sourceTree = "<group>"; };
+		AB25D83708686B520065843D /* VineServer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "VineServer-Info.plist"; sourceTree = "<group>"; };
+		AB25D83808686B520065843D /* Vine Server.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Vine Server.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB25DA3A0868842E0065843D /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
+		AB25DA3C086884420065843D /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = /usr/lib/libz.dylib; sourceTree = "<absolute>"; };
+		AB3E27F70AF947FB004AF567 /* Vine Server.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Vine Server.pdf"; sourceTree = "<group>"; };
+		AB41881F04C5986E00A80117 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+		AB82605708689AC00010AB63 /* storepasswd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = storepasswd; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB82605B08689AC00010AB63 /* OSXvnc-server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "OSXvnc-server"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB82E81904FA629800A80117 /* kbdptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kbdptr.h; sourceTree = "<group>"; };
+		AB82E81D04FA6D0A00A80117 /* rfbserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rfbserver.h; sourceTree = "<group>"; };
+		AB83C53A12724F8B0096F6A7 /* Version.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Version.txt; sourceTree = "<group>"; };
+		AB95E3650FD497F600D063EC /* screencapture.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = screencapture.c; sourceTree = "<group>"; };
+		AB95E3B20FD4A68800D063EC /* screencapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = screencapture.h; sourceTree = "<group>"; };
+		AB95E3ED0FD4AA3700D063EC /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		ABA7B3D10948CB5D00CD7499 /* d3des.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = d3des.c; sourceTree = "<group>"; };
+		ABA7B3D20948CB5D00CD7499 /* d3des.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = d3des.h; sourceTree = "<group>"; };
+		ABA7B3D30948CB5D00CD7499 /* vncauth.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = vncauth.c; sourceTree = "<group>"; };
+		ABA7B3D40948CB5D00CD7499 /* vncauth.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = vncauth.h; sourceTree = "<group>"; };
+		ABA7B3D50948CB5D00CD7499 /* zrleEncode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = zrleEncode.h; sourceTree = "<group>"; };
+		ABA7B52D094A053000CD7499 /* librdr.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librdr.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		ABCCC8B203D9C60A00A80117 /* OSXvnc */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = OSXvnc; sourceTree = "<group>"; };
+		ABD8EC07058A0BD600C84739 /* NSAuthorization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSAuthorization.h; sourceTree = "<group>"; };
+		ABD8EC08058A0BD600C84739 /* NSAuthorization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSAuthorization.m; sourceTree = "<group>"; };
+		ABEE28F804C8745B00A80117 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
+		ABF191B704E447A400A80117 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		ABFC222B0AF08CBA00BCE727 /* VineServer.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = VineServer.icns; sourceTree = "<group>"; };
+		F538E01002F9812901A80186 /* auth.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 30; path = auth.c; sourceTree = "<group>"; };
+		F538E01302F9812901A80186 /* corre.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = corre.c; sourceTree = "<group>"; };
+		F538E01402F9812901A80186 /* cutpaste.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 30; path = cutpaste.c; sourceTree = "<group>"; };
+		F538E01502F9812901A80186 /* dimming.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dimming.c; sourceTree = "<group>"; };
+		F538E01602F9812901A80186 /* hextile.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 30; path = hextile.c; sourceTree = "<group>"; };
+		F538E01902F9812901A80186 /* keysym.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = keysym.h; sourceTree = "<group>"; };
+		F538E01A02F9812901A80186 /* keysymdef.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = keysymdef.h; sourceTree = "<group>"; };
+		F538E01B02F9812901A80186 /* X.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = X.h; sourceTree = "<group>"; };
+		F538E01C02F9812901A80186 /* Xalloca.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Xalloca.h; sourceTree = "<group>"; };
+		F538E01D02F9812901A80186 /* Xfuncproto.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Xfuncproto.h; sourceTree = "<group>"; };
+		F538E01E02F9812901A80186 /* Xfuncs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Xfuncs.h; sourceTree = "<group>"; };
+		F538E01F02F9812901A80186 /* Xmd.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Xmd.h; sourceTree = "<group>"; };
+		F538E02002F9812901A80186 /* Xos.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Xos.h; sourceTree = "<group>"; };
+		F538E02102F9812901A80186 /* Xosdefs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Xosdefs.h; sourceTree = "<group>"; };
+		F538E02202F9812901A80186 /* Xproto.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Xproto.h; sourceTree = "<group>"; };
+		F538E02302F9812901A80186 /* Xprotostr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Xprotostr.h; sourceTree = "<group>"; };
+		F538E02502F9812901A80186 /* colormap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = colormap.h; sourceTree = "<group>"; };
+		F538E02602F9812901A80186 /* cursor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cursor.h; sourceTree = "<group>"; };
+		F538E02702F9812901A80186 /* dix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = dix.h; sourceTree = "<group>"; };
+		F538E02802F9812901A80186 /* gc.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = gc.h; sourceTree = "<group>"; };
+		F538E02902F9812901A80186 /* input.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = input.h; sourceTree = "<group>"; };
+		F538E02A02F9812901A80186 /* misc.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = misc.h; sourceTree = "<group>"; };
+		F538E02B02F9812901A80186 /* miscstruct.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = miscstruct.h; sourceTree = "<group>"; };
+		F538E02C02F9812901A80186 /* opaque.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = opaque.h; sourceTree = "<group>"; };
+		F538E02D02F9812901A80186 /* os.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = os.h; sourceTree = "<group>"; };
+		F538E02E02F9812901A80186 /* pixmap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = pixmap.h; sourceTree = "<group>"; };
+		F538E02F02F9812901A80186 /* region.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = region.h; sourceTree = "<group>"; };
+		F538E03002F9812901A80186 /* regionstr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = regionstr.h; sourceTree = "<group>"; };
+		F538E03102F9812901A80186 /* screenint.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = screenint.h; sourceTree = "<group>"; };
+		F538E03202F9812901A80186 /* scrnintstr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = scrnintstr.h; sourceTree = "<group>"; };
+		F538E03302F9812901A80186 /* validate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = validate.h; sourceTree = "<group>"; };
+		F538E03402F9812901A80186 /* window.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = window.h; sourceTree = "<group>"; };
+		F538E03502F9812901A80186 /* kbdptr.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 30; path = kbdptr.c; sourceTree = "<group>"; };
+		F538E10E02F9812C01A80186 /* main.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 30; path = main.c; sourceTree = "<group>"; };
+		F538E10F02F9812C01A80186 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		F538E11002F9812C01A80186 /* miregion.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = miregion.c; sourceTree = "<group>"; };
+		F538E11302F9812C01A80186 /* rfb.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = rfb.h; sourceTree = "<group>"; };
+		F538E11402F9812C01A80186 /* rfbproto.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = rfbproto.h; sourceTree = "<group>"; };
+		F538E11502F9812C01A80186 /* rfbserver.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 30; lineEnding = 0; path = rfbserver.c; sourceTree = "<group>"; };
+		F538E11602F9812C01A80186 /* rre.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rre.c; sourceTree = "<group>"; };
+		F538E11702F9812C01A80186 /* sockets.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = sockets.c; sourceTree = "<group>"; };
+		F538E11802F9812C01A80186 /* stats.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = stats.c; sourceTree = "<group>"; };
+		F538E11902F9812C01A80186 /* storepasswd.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = storepasswd.c; sourceTree = "<group>"; };
+		F538E11A02F9812C01A80186 /* tableinitcmtemplate.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = tableinitcmtemplate.c; sourceTree = "<group>"; };
+		F538E11B02F9812C01A80186 /* tableinittctemplate.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = tableinittctemplate.c; sourceTree = "<group>"; };
+		F538E11C02F9812C01A80186 /* tabletranstemplate.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = tabletranstemplate.c; sourceTree = "<group>"; };
+		F538E11D02F9812C01A80186 /* tight.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = tight.c; sourceTree = "<group>"; };
+		F538E11F02F9812C01A80186 /* translate.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = translate.c; sourceTree = "<group>"; };
+		F538E12002F9812C01A80186 /* xalloc.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = xalloc.c; sourceTree = "<group>"; };
+		F538E12102F9812C01A80186 /* zlib.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = zlib.c; sourceTree = "<group>"; };
+		F538E12202F9812C01A80186 /* zlibhex.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = zlibhex.c; sourceTree = "<group>"; };
+		F5456A2802FAD08901A80117 /* VNCController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = VNCController.m; sourceTree = "<group>"; };
+		F5456A2902FAD08901A80117 /* VNCController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VNCController.h; sourceTree = "<group>"; };
+		F54B48D8038C32FA01A80117 /* OSXvnc.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = OSXvnc.tiff; sourceTree = "<group>"; };
+		F570ED1002F9DA7601A80186 /* OSXvnc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = OSXvnc.icns; sourceTree = SOURCE_ROOT; };
+		F58DDDE7056A861001A8015E /* VNCServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VNCServer.h; sourceTree = "<group>"; };
+		F58DDDE8056A861001A8015E /* VNCServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VNCServer.m; sourceTree = "<group>"; };
+		F5C9A8F1038C6F5D01A80117 /* mousecursor.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = mousecursor.c; sourceTree = "<group>"; };
+		F5C9A8F6038C74D301A80117 /* CGS.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CGS.h; sourceTree = "<group>"; };
+		F5C9B02C038DA64501A80117 /* zrle.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = zrle.cc; sourceTree = "<group>"; };
+		F5C9B02F038DA99401A80117 /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
+		F5C9B030038DA99401A80117 /* FdInStream.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FdInStream.cxx; sourceTree = "<group>"; };
+		F5C9B031038DA99401A80117 /* FdInStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FdInStream.h; sourceTree = "<group>"; };
+		F5C9B032038DA99401A80117 /* FdOutStream.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FdOutStream.cxx; sourceTree = "<group>"; };
+		F5C9B033038DA99401A80117 /* FdOutStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FdOutStream.h; sourceTree = "<group>"; };
+		F5C9B034038DA99401A80117 /* FixedMemOutStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FixedMemOutStream.h; sourceTree = "<group>"; };
+		F5C9B035038DA99401A80117 /* InStream.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = InStream.cxx; sourceTree = "<group>"; };
+		F5C9B036038DA99401A80117 /* InStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = InStream.h; sourceTree = "<group>"; };
+		F5C9B038038DA99401A80117 /* MemInStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MemInStream.h; sourceTree = "<group>"; };
+		F5C9B039038DA99401A80117 /* MemOutStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MemOutStream.h; sourceTree = "<group>"; };
+		F5C9B03A038DA99401A80117 /* NullOutStream.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = NullOutStream.cxx; sourceTree = "<group>"; };
+		F5C9B03B038DA99401A80117 /* NullOutStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = NullOutStream.h; sourceTree = "<group>"; };
+		F5C9B03C038DA99401A80117 /* OutStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = OutStream.h; sourceTree = "<group>"; };
+		F5C9B03E038DA99401A80117 /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		F5C9B03F038DA99401A80117 /* ZlibInStream.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ZlibInStream.cxx; sourceTree = "<group>"; };
+		F5C9B040038DA99401A80117 /* ZlibInStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ZlibInStream.h; sourceTree = "<group>"; };
+		F5C9B041038DA99401A80117 /* ZlibOutStream.cxx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ZlibOutStream.cxx; sourceTree = "<group>"; };
+		F5C9B042038DA99401A80117 /* ZlibOutStream.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ZlibOutStream.h; sourceTree = "<group>"; };
+		F5F3A78903B395AA01A80117 /* OSXvnc.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = OSXvnc.jpg; sourceTree = "<group>"; };
+		F89837A525B78CE3003BFE25 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = fr; path = fr.lproj/Copying.rtf; sourceTree = "<group>"; };
+		F89837A625B78CE3003BFE25 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F89837A825B78CFB003BFE25 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Copying.rtf; sourceTree = "<group>"; };
+		F89837A925B78CFB003BFE25 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		F89837AA25B78CFB003BFE25 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F89837AB25B78CFB003BFE25 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = "en.lproj/Vine Server Release Notes.rtf"; sourceTree = "<group>"; };
+		F89837AC25B78D00003BFE25 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = de; path = de.lproj/Copying.rtf; sourceTree = "<group>"; };
+		F89837AD25B78D00003BFE25 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F89837AE25B78D05003BFE25 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = ja; path = ja.lproj/Copying.rtf; sourceTree = "<group>"; };
+		F89837AF25B78D05003BFE25 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F89837B025B78D09003BFE25 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F89837B125B78D15003BFE25 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AB25D82F08686B520065843D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB25D83008686B520065843D /* Cocoa.framework in Frameworks */,
+				AB25D83108686B520065843D /* Security.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB25D88D08686FC40065843D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB25D8AC0868707C0065843D /* Carbon.framework in Frameworks */,
+				AB25D9400868707E0065843D /* Cocoa.framework in Frameworks */,
+				AB25DA3B0868842E0065843D /* IOKit.framework in Frameworks */,
+				AB95E3EE0FD4AA3800D063EC /* OpenGL.framework in Frameworks */,
+				ABA7B560094A080200CD7499 /* librdr.a in Frameworks */,
+				AB25DA3D086884420065843D /* libz.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AB25D83808686B520065843D /* Vine Server.app */,
+				AB82605708689AC00010AB63 /* storepasswd */,
+				AB82605B08689AC00010AB63 /* OSXvnc-server */,
+				ABA7B52D094A053000CD7499 /* librdr.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* OSXvnc */ = {
+			isa = PBXGroup;
+			children = (
+				BCFF37981DEB1F6300D4F43D /* VineServer */,
+				F538E00B02F9812901A80186 /* OSXvnc-server */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = OSXvnc;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				29B97316FDCFA39411CA2CEA /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AB3E27F70AF947FB004AF567 /* Vine Server.pdf */,
+				AB541C2907A0264F00B63668 /* Vine Server Release Notes.rtf */,
+				096B69DC0097995A7F000001 /* OSXvnc.html */,
+				ABCCC8B203D9C60A00A80117 /* OSXvnc */,
+				ABD7FE7E07AFF8B4004D0B81 /* Localizable.strings */,
+				AB541C3B07A0273500B63668 /* Copying.rtf */,
+				F57BB467027E036F014B5D3F /* Credits.rtf */,
+				ABFC222B0AF08CBA00BCE727 /* VineServer.icns */,
+				F5F3A78903B395AA01A80117 /* OSXvnc.jpg */,
+				F570ED1002F9DA7601A80186 /* OSXvnc.icns */,
+				F54B48D8038C32FA01A80117 /* OSXvnc.tiff */,
+				AB83C53A12724F8B0096F6A7 /* Version.txt */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AB25DA3C086884420065843D /* libz.dylib */,
+				AB25DA3A0868842E0065843D /* IOKit.framework */,
+				ABF191B704E447A400A80117 /* Carbon.framework */,
+				AB95E3ED0FD4AA3700D063EC /* OpenGL.framework */,
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				ABEE28F804C8745B00A80117 /* Security.framework */,
+				AB41881F04C5986E00A80117 /* ApplicationServices.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BCFF37981DEB1F6300D4F43D /* VineServer */ = {
+			isa = PBXGroup;
+			children = (
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				ABDBE34515BA2A9D00558229 /* MainMenu.xib */,
+				ABD8EC07058A0BD600C84739 /* NSAuthorization.h */,
+				ABD8EC08058A0BD600C84739 /* NSAuthorization.m */,
+				F5456A2902FAD08901A80117 /* VNCController.h */,
+				F5456A2802FAD08901A80117 /* VNCController.m */,
+				AB25D83708686B520065843D /* VineServer-Info.plist */,
+			);
+			name = VineServer;
+			sourceTree = "<group>";
+		};
+		F538E00B02F9812901A80186 /* OSXvnc-server */ = {
+			isa = PBXGroup;
+			children = (
+				F538E10F02F9812C01A80186 /* Makefile */,
+				F58DDDE7056A861001A8015E /* VNCServer.h */,
+				F58DDDE8056A861001A8015E /* VNCServer.m */,
+				ABA7B3D10948CB5D00CD7499 /* d3des.c */,
+				ABA7B3D20948CB5D00CD7499 /* d3des.h */,
+				ABA7B3D30948CB5D00CD7499 /* vncauth.c */,
+				ABA7B3D40948CB5D00CD7499 /* vncauth.h */,
+				F5C9A8F6038C74D301A80117 /* CGS.h */,
+				F538E11302F9812C01A80186 /* rfb.h */,
+				F538E11402F9812C01A80186 /* rfbproto.h */,
+				F538E01002F9812901A80186 /* auth.c */,
+				F538E01302F9812901A80186 /* corre.c */,
+				919999420B11348C0099EA7A /* getMACAddress.h */,
+				919999430B11348E0099EA7A /* getMACAddress.c */,
+				F538E01402F9812901A80186 /* cutpaste.c */,
+				F538E01502F9812901A80186 /* dimming.c */,
+				F5C9A8F1038C6F5D01A80117 /* mousecursor.c */,
+				F538E01602F9812901A80186 /* hextile.c */,
+				AB82E81904FA629800A80117 /* kbdptr.h */,
+				F538E03502F9812901A80186 /* kbdptr.c */,
+				F538E10E02F9812C01A80186 /* main.c */,
+				F538E11002F9812C01A80186 /* miregion.c */,
+				AB82E81D04FA6D0A00A80117 /* rfbserver.h */,
+				F538E11502F9812C01A80186 /* rfbserver.c */,
+				F538E11602F9812C01A80186 /* rre.c */,
+				AB95E3650FD497F600D063EC /* screencapture.c */,
+				AB95E3B20FD4A68800D063EC /* screencapture.h */,
+				F538E11702F9812C01A80186 /* sockets.c */,
+				F538E11802F9812C01A80186 /* stats.c */,
+				F538E11902F9812C01A80186 /* storepasswd.c */,
+				F538E11A02F9812C01A80186 /* tableinitcmtemplate.c */,
+				F538E11B02F9812C01A80186 /* tableinittctemplate.c */,
+				F538E11C02F9812C01A80186 /* tabletranstemplate.c */,
+				F538E11D02F9812C01A80186 /* tight.c */,
+				F538E11F02F9812C01A80186 /* translate.c */,
+				F538E12002F9812C01A80186 /* xalloc.c */,
+				F538E12102F9812C01A80186 /* zlib.c */,
+				F538E12202F9812C01A80186 /* zlibhex.c */,
+				F5C9B02C038DA64501A80117 /* zrle.cc */,
+				ABA7B3D50948CB5D00CD7499 /* zrleEncode.h */,
+				F5C9B02E038DA99401A80117 /* rdr */,
+				F538E01702F9812901A80186 /* include */,
+			);
+			path = "OSXvnc-server";
+			sourceTree = "<group>";
+		};
+		F538E01702F9812901A80186 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				F538E01802F9812901A80186 /* X11 */,
+				F538E02402F9812901A80186 /* Xserver */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		F538E01802F9812901A80186 /* X11 */ = {
+			isa = PBXGroup;
+			children = (
+				F538E01902F9812901A80186 /* keysym.h */,
+				F538E01A02F9812901A80186 /* keysymdef.h */,
+				F538E01B02F9812901A80186 /* X.h */,
+				F538E01C02F9812901A80186 /* Xalloca.h */,
+				F538E01D02F9812901A80186 /* Xfuncproto.h */,
+				F538E01E02F9812901A80186 /* Xfuncs.h */,
+				F538E01F02F9812901A80186 /* Xmd.h */,
+				F538E02002F9812901A80186 /* Xos.h */,
+				F538E02102F9812901A80186 /* Xosdefs.h */,
+				F538E02202F9812901A80186 /* Xproto.h */,
+				F538E02302F9812901A80186 /* Xprotostr.h */,
+			);
+			path = X11;
+			sourceTree = "<group>";
+		};
+		F538E02402F9812901A80186 /* Xserver */ = {
+			isa = PBXGroup;
+			children = (
+				F538E02502F9812901A80186 /* colormap.h */,
+				F538E02602F9812901A80186 /* cursor.h */,
+				F538E02702F9812901A80186 /* dix.h */,
+				F538E02802F9812901A80186 /* gc.h */,
+				F538E02902F9812901A80186 /* input.h */,
+				F538E02A02F9812901A80186 /* misc.h */,
+				F538E02B02F9812901A80186 /* miscstruct.h */,
+				F538E02C02F9812901A80186 /* opaque.h */,
+				F538E02D02F9812901A80186 /* os.h */,
+				F538E02E02F9812901A80186 /* pixmap.h */,
+				F538E02F02F9812901A80186 /* region.h */,
+				F538E03002F9812901A80186 /* regionstr.h */,
+				F538E03102F9812901A80186 /* screenint.h */,
+				F538E03202F9812901A80186 /* scrnintstr.h */,
+				F538E03302F9812901A80186 /* validate.h */,
+				F538E03402F9812901A80186 /* window.h */,
+			);
+			path = Xserver;
+			sourceTree = "<group>";
+		};
+		F5C9B02E038DA99401A80117 /* rdr */ = {
+			isa = PBXGroup;
+			children = (
+				F5C9B02F038DA99401A80117 /* Exception.h */,
+				F5C9B030038DA99401A80117 /* FdInStream.cxx */,
+				F5C9B031038DA99401A80117 /* FdInStream.h */,
+				F5C9B032038DA99401A80117 /* FdOutStream.cxx */,
+				F5C9B033038DA99401A80117 /* FdOutStream.h */,
+				F5C9B034038DA99401A80117 /* FixedMemOutStream.h */,
+				F5C9B035038DA99401A80117 /* InStream.cxx */,
+				F5C9B036038DA99401A80117 /* InStream.h */,
+				F5C9B038038DA99401A80117 /* MemInStream.h */,
+				F5C9B039038DA99401A80117 /* MemOutStream.h */,
+				F5C9B03A038DA99401A80117 /* NullOutStream.cxx */,
+				F5C9B03B038DA99401A80117 /* NullOutStream.h */,
+				F5C9B03C038DA99401A80117 /* OutStream.h */,
+				F5C9B03E038DA99401A80117 /* types.h */,
+				F5C9B03F038DA99401A80117 /* ZlibInStream.cxx */,
+				F5C9B040038DA99401A80117 /* ZlibInStream.h */,
+				F5C9B041038DA99401A80117 /* ZlibOutStream.cxx */,
+				F5C9B042038DA99401A80117 /* ZlibOutStream.h */,
+			);
+			path = rdr;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		ABA7B529094A053000CD7499 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CA008152121CA1D8008B29B7 /* FdOutStream.h in Headers */,
+				CA008154121CA1E8008B29B7 /* InStream.h in Headers */,
+				CA008158121CA200008B29B7 /* OutStream.h in Headers */,
+				CA008159121CA204008B29B7 /* types.h in Headers */,
+				CA008156121CA1F7008B29B7 /* MemOutStream.h in Headers */,
+				CA00815A121CA207008B29B7 /* ZlibInStream.h in Headers */,
+				CA00815B121CA20A008B29B7 /* ZlibOutStream.h in Headers */,
+				CA008157121CA1FC008B29B7 /* NullOutStream.h in Headers */,
+				CA008153121CA1E1008B29B7 /* FixedMemOutStream.h in Headers */,
+				CA008155121CA1F3008B29B7 /* MemInStream.h in Headers */,
+				CA008151121CA1C5008B29B7 /* Exception.h in Headers */,
+				CA00814E121CA18D008B29B7 /* FdInStream.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		AB25D81508686B520065843D /* Vine Server */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ABECD3EA08E46414009C84A0 /* Build configuration list for PBXNativeTarget "Vine Server" */;
+			buildPhases = (
+				AB25D81D08686B520065843D /* Resources */,
+				AB25D82908686B520065843D /* Sources */,
+				AB25D82F08686B520065843D /* Frameworks */,
+				AB25D83208686B520065843D /* CopyFiles */,
+				AB139E5C0CEA05C200EE873A /* Record our Version */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AB52324708689C02003F66AC /* PBXTargetDependency */,
+				AB25DA5D08688EE80065843D /* PBXTargetDependency */,
+			);
+			name = "Vine Server";
+			productInstallPath = /OSXvnc/;
+			productName = OSXvnc;
+			productReference = AB25D83808686B520065843D /* Vine Server.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AB25D88E08686FC40065843D /* OSXvnc-server */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ABECD3DE08E46414009C84A0 /* Build configuration list for PBXNativeTarget "OSXvnc-server" */;
+			buildPhases = (
+				AB25D88C08686FC40065843D /* Sources */,
+				AB25D88D08686FC40065843D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ABA7B55B094A07AE00CD7499 /* PBXTargetDependency */,
+			);
+			name = "OSXvnc-server";
+			productName = "OSXvnc-server";
+			productReference = AB82605B08689AC00010AB63 /* OSXvnc-server */;
+			productType = "com.apple.product-type.tool";
+		};
+		AB25D98F086876B80065843D /* storepasswd */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ABECD3E208E46414009C84A0 /* Build configuration list for PBXNativeTarget "storepasswd" */;
+			buildPhases = (
+				AB25D98D086876B80065843D /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = storepasswd;
+			productName = storepasswd;
+			productReference = AB82605708689AC00010AB63 /* storepasswd */;
+			productType = "com.apple.product-type.tool";
+		};
+		ABA7B52C094A053000CD7499 /* rdr */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ABA7B537094A054A00CD7499 /* Build configuration list for PBXNativeTarget "rdr" */;
+			buildPhases = (
+				ABA7B529094A053000CD7499 /* Headers */,
+				ABA7B52A094A053000CD7499 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = rdr;
+			productName = rdr;
+			productReference = ABA7B52D094A053000CD7499 /* librdr.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1230;
+			};
+			buildConfigurationList = ABECD3EE08E46414009C84A0 /* Build configuration list for PBXProject "OSXvnc" */;
+			compatibilityVersion = "Xcode 6.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				fr,
+				en,
+				de,
+				ja,
+				it,
+				Base,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* OSXvnc */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				ABA30D3D15BEE7310001BAE5 /* Vine Server Package */,
+				AB25D81508686B520065843D /* Vine Server */,
+				AB25D88E08686FC40065843D /* OSXvnc-server */,
+				AB25D98F086876B80065843D /* storepasswd */,
+				ABA7B52C094A053000CD7499 /* rdr */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AB25D81D08686B520065843D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB25D82108686B520065843D /* Copying.rtf in Resources */,
+				AB25D81F08686B520065843D /* Credits.rtf in Resources */,
+				AB25D82208686B520065843D /* Localizable.strings in Resources */,
+				AB25D82008686B520065843D /* Vine Server Release Notes.rtf in Resources */,
+				AB25D82608686B520065843D /* OSXvnc in Resources */,
+				ABFC222C0AF08CBA00BCE727 /* VineServer.icns in Resources */,
+				AB3E27F80AF947FB004AF567 /* Vine Server.pdf in Resources */,
+				ABDBE34715BA2A9D00558229 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AB139E5C0CEA05C200EE873A /* Record our Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Record our Version";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#Write our current AGV version number into the Info.plist\ntypeset CURRENT_PRODUCT_VERSION=`cat Version.txt`\ntypeset CURRENT_BUILD_VERSION=`date +%y%m%d%H%M`\ntypeset CURRENT_YEAR=`date +%Y`\necho Version: $CURRENT_PRODUCT_VERSION Build Number: $CURRENT_BUILD_VERSION\npushd \"$TARGET_BUILD_DIR/$PRODUCT_NAME.$WRAPPER_EXTENSION/Contents\"\nsed -i \"\" s/__PRODUCT_VERSION__/$CURRENT_PRODUCT_VERSION/ ./Info.plist\nsed -i \"\" s/__BUILD_VERSION__/$CURRENT_BUILD_VERSION/ ./Info.plist\nsed -i \"\" s/__YEAR__/$CURRENT_YEAR/ ./Info.plist\npopd\n";
+		};
+		ABA30D3C15BEE7310001BAE5 /* Build DMG */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Build DMG";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Create a UDIF DMG\nset -e\nset -x\nPACKAGE_FOLDER=\"/tmp/VineServer\"\nrm -rf \"$PACKAGE_FOLDER\"\nmkdir -p \"$PACKAGE_FOLDER\"\ncp -r \"$BUILT_PRODUCTS_DIR/Vine Server.app\" \"$PACKAGE_FOLDER\"\nhdiutil create -fs HFS+ -ov -format UDZO -imagekey zlib-level=9 -srcfolder \"$PACKAGE_FOLDER\" \"/tmp/VineServer.dmg\"";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AB25D82908686B520065843D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB25D82A08686B520065843D /* main.m in Sources */,
+				AB25D82B08686B520065843D /* VNCController.m in Sources */,
+				AB25D82E08686B520065843D /* NSAuthorization.m in Sources */,
+				ABA7B6D0094A170E00CD7499 /* vncauth.c in Sources */,
+				ABA7B6D6094A171A00CD7499 /* d3des.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB25D88C08686FC40065843D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB25D895086870420065843D /* auth.c in Sources */,
+				AB25D896086870430065843D /* corre.c in Sources */,
+				AB25D897086870430065843D /* cutpaste.c in Sources */,
+				AB25D898086870440065843D /* dimming.c in Sources */,
+				AB25D899086870460065843D /* VNCServer.m in Sources */,
+				AB25D89A086870490065843D /* mousecursor.c in Sources */,
+				AB25D89B0868704A0065843D /* hextile.c in Sources */,
+				AB25D89C0868704B0065843D /* kbdptr.c in Sources */,
+				AB25D89E0868704C0065843D /* main.c in Sources */,
+				AB25D89F0868704C0065843D /* miregion.c in Sources */,
+				AB25D8A00868704D0065843D /* rfbserver.c in Sources */,
+				AB25D8A10868704E0065843D /* rre.c in Sources */,
+				AB25D8A20868704E0065843D /* sockets.c in Sources */,
+				AB25D8A30868704F0065843D /* stats.c in Sources */,
+				AB25D8A5086870530065843D /* tight.c in Sources */,
+				AB25D8A6086870540065843D /* translate.c in Sources */,
+				AB25D8A7086870540065843D /* xalloc.c in Sources */,
+				AB25D8A8086870550065843D /* zlib.c in Sources */,
+				AB25D8A9086870550065843D /* zlibhex.c in Sources */,
+				AB25D8AA086870560065843D /* zrle.cc in Sources */,
+				ABA7B3D60948CB5D00CD7499 /* d3des.c in Sources */,
+				ABA7B3D70948CB5D00CD7499 /* vncauth.c in Sources */,
+				9199995B0B1135FF0099EA7A /* getMACAddress.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB25D98D086876B80065843D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB25D992086877000065843D /* storepasswd.c in Sources */,
+				ABA7B5150949EB7E00CD7499 /* d3des.c in Sources */,
+				ABA7B51F0949EBBC00CD7499 /* vncauth.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ABA7B52A094A053000CD7499 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ABA7B53F094A05BE00CD7499 /* FdInStream.cxx in Sources */,
+				ABA7B540094A05BF00CD7499 /* FdOutStream.cxx in Sources */,
+				ABA7B543094A05C700CD7499 /* InStream.cxx in Sources */,
+				ABA7B544094A05C900CD7499 /* NullOutStream.cxx in Sources */,
+				ABA7B547094A05DE00CD7499 /* ZlibInStream.cxx in Sources */,
+				ABA7B548094A05DF00CD7499 /* ZlibOutStream.cxx in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AB25DA5D08688EE80065843D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AB25D98F086876B80065843D /* storepasswd */;
+			targetProxy = AB25DA5C08688EE80065843D /* PBXContainerItemProxy */;
+		};
+		AB52324708689C02003F66AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AB25D88E08686FC40065843D /* OSXvnc-server */;
+			targetProxy = AB52324608689C02003F66AC /* PBXContainerItemProxy */;
+		};
+		ABA30D4115BEE7490001BAE5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AB25D81508686B520065843D /* Vine Server */;
+			targetProxy = ABA30D4015BEE7490001BAE5 /* PBXContainerItemProxy */;
+		};
+		ABA7B55B094A07AE00CD7499 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ABA7B52C094A053000CD7499 /* rdr */;
+			targetProxy = ABA7B55A094A07AE00CD7499 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		AB541C2907A0264F00B63668 /* Vine Server Release Notes.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F89837AB25B78CFB003BFE25 /* en */,
+			);
+			name = "Vine Server Release Notes.rtf";
+			sourceTree = "<group>";
+		};
+		AB541C3B07A0273500B63668 /* Copying.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F89837A525B78CE3003BFE25 /* fr */,
+				F89837A825B78CFB003BFE25 /* en */,
+				F89837AC25B78D00003BFE25 /* de */,
+				F89837AE25B78D05003BFE25 /* ja */,
+			);
+			name = Copying.rtf;
+			sourceTree = "<group>";
+		};
+		ABD7FE7E07AFF8B4004D0B81 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F89837A625B78CE3003BFE25 /* fr */,
+				F89837AA25B78CFB003BFE25 /* en */,
+				F89837AD25B78D00003BFE25 /* de */,
+				F89837AF25B78D05003BFE25 /* ja */,
+				F89837B025B78D09003BFE25 /* it */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		ABDBE34515BA2A9D00558229 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F89837B125B78D15003BFE25 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		F57BB467027E036F014B5D3F /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F89837A925B78CFB003BFE25 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		ABA30D3E15BEE7310001BAE5 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = "Vine Server Package";
+				SDKROOT = macosx;
+			};
+			name = Development;
+		};
+		ABA30D3F15BEE7310001BAE5 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				PRODUCT_NAME = "Vine Server Package";
+				SDKROOT = macosx;
+			};
+			name = Deployment;
+		};
+		ABA7B538094A054A00CD7499 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				HEADER_SEARCH_PATHS = "osxvnc-server";
+				INSTALL_PATH = /usr/local/lib;
+				PRODUCT_NAME = rdr;
+			};
+			name = Development;
+		};
+		ABA7B539094A054A00CD7499 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				CXX = "g++-3.3 ";
+				DEPLOYMENT_POSTPROCESSING = NO;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				HEADER_SEARCH_PATHS = "osxvnc-server";
+				PRODUCT_NAME = rdr;
+				SEPARATE_STRIP = NO;
+				STRIP_INSTALLED_PRODUCT = NO;
+			};
+			name = Deployment;
+		};
+		ABECD3DF08E46414009C84A0 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				HEADER_SEARCH_PATHS = (
+					"OSXvnc-server",
+					"OSXvnc-server/include",
+					"libjpeg-turbo",
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				"OTHER_LDFLAGS[arch=arm64]" = (
+					"-sectcreate",
+					__CGPreLoginApp,
+					__cgpreloginapp,
+					/dev/null,
+					"libjpeg-turbo/macosarmv8/libturbojpeg.a",
+				);
+				"OTHER_LDFLAGS[arch=x86_64]" = (
+					"-sectcreate",
+					__CGPreLoginApp,
+					__cgpreloginapp,
+					/dev/null,
+					"libjpeg-turbo/macosx8664/libturbojpeg.a",
+				);
+				PRODUCT_NAME = "OSXvnc-server";
+				PROVISIONING_PROFILE = "";
+			};
+			name = Development;
+		};
+		ABECD3E008E46414009C84A0 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_POSTPROCESSING = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				HEADER_SEARCH_PATHS = (
+					"OSXvnc-server",
+					"OSXvnc-server/include",
+					"libjpeg-turbo",
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				MACH_O_TYPE = mh_execute;
+				"OTHER_LDFLAGS[arch=arm64]" = (
+					"-sectcreate",
+					__CGPreLoginApp,
+					__cgpreloginapp,
+					/dev/null,
+					"libjpeg-turbo/macosarmv8/libturbojpeg.a",
+				);
+				"OTHER_LDFLAGS[arch=x86_64]" = (
+					"-sectcreate",
+					__CGPreLoginApp,
+					__cgpreloginapp,
+					/dev/null,
+					"libjpeg-turbo/macosx8664/libturbojpeg.a",
+				);
+				PRODUCT_NAME = "OSXvnc-server";
+				PROVISIONING_PROFILE = "";
+				STRIP_INSTALLED_PRODUCT = NO;
+			};
+			name = Deployment;
+		};
+		ABECD3E308E46414009C84A0 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				PRODUCT_NAME = storepasswd;
+				PROVISIONING_PROFILE = "";
+			};
+			name = Development;
+		};
+		ABECD3E408E46414009C84A0 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				PRODUCT_NAME = storepasswd;
+				PROVISIONING_PROFILE = "";
+			};
+			name = Deployment;
+		};
+		ABECD3EB08E46414009C84A0 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DSTROOT = "";
+				INFOPLIST_FILE = "VineServer-Info.plist";
+				INSTALL_PATH = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "de.uni-mannheim.VineServer";
+				PRODUCT_NAME = "Vine Server";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Development;
+		};
+		ABECD3EC08E46414009C84A0 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				DSTROOT = "";
+				INFOPLIST_FILE = "VineServer-Info.plist";
+				INSTALL_PATH = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "de.uni-mannheim.VineServer";
+				PRODUCT_NAME = "Vine Server";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Deployment;
+		};
+		ABECD3EF08E46414009C84A0 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				DSTROOT = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "";
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
+			};
+			name = Development;
+		};
+		ABECD3F008E46414009C84A0 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				DSTROOT = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "";
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
+			};
+			name = Deployment;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		ABA30D4215BEE7670001BAE5 /* Build configuration list for PBXAggregateTarget "Vine Server Package" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ABA30D3E15BEE7310001BAE5 /* Development */,
+				ABA30D3F15BEE7310001BAE5 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		ABA7B537094A054A00CD7499 /* Build configuration list for PBXNativeTarget "rdr" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ABA7B538094A054A00CD7499 /* Development */,
+				ABA7B539094A054A00CD7499 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		ABECD3DE08E46414009C84A0 /* Build configuration list for PBXNativeTarget "OSXvnc-server" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ABECD3DF08E46414009C84A0 /* Development */,
+				ABECD3E008E46414009C84A0 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		ABECD3E208E46414009C84A0 /* Build configuration list for PBXNativeTarget "storepasswd" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ABECD3E308E46414009C84A0 /* Development */,
+				ABECD3E408E46414009C84A0 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		ABECD3EA08E46414009C84A0 /* Build configuration list for PBXNativeTarget "Vine Server" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ABECD3EB08E46414009C84A0 /* Development */,
+				ABECD3EC08E46414009C84A0 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		ABECD3EE08E46414009C84A0 /* Build configuration list for PBXProject "OSXvnc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ABECD3EF08E46414009C84A0 /* Development */,
+				ABECD3F008E46414009C84A0 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}
