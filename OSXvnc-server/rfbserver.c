@@ -40,7 +40,7 @@
 #include <netdb.h>
 
 #include "rfb.h"
-//#include "rfbserver.h"
+
 //char updateBuf[UPDATE_BUF_SIZE];
 //int ublen;
 
@@ -54,6 +54,10 @@ struct rfbClientIterator {
 
 static pthread_mutex_t rfbClientListMutex;
 static struct rfbClientIterator rfbClientIteratorInstance;
+
+static void CopyScalingRect(rfbClientPtr cl,
+                            uint32_t* x, uint32_t* y, uint32_t* w, uint32_t* h,
+                            bool bDoScaling);
 
 void
 rfbClientListInit(void)
@@ -86,30 +90,28 @@ rfbReleaseClientIterator(rfbClientIteratorPtr iterator)
     pthread_mutex_unlock(&rfbClientListMutex);
 }
 
-Bool rfbClientsConnected()
+Bool rfbClientsConnected(void)
 {
     return (rfbClientHead != NULL);
 }
 
-void rfbSendClientList() {
+static void rfbSendClientList(void) {
     pthread_mutex_lock(&rfbClientListMutex);
 
-	NSAutoreleasePool *pool=[[NSAutoreleasePool alloc] init];
-	NSMutableArray *clientList = [[NSMutableArray alloc] init];
-	rfbClientPtr myClient = rfbClientHead;
-	
-	while (myClient != NULL) {
-		[clientList addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-							   [NSString stringWithCString: myClient->host encoding: NSUTF8StringEncoding], @"clientIP",
-			nil]];
-		myClient = myClient->next;
-	}
-	
-	[[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"VNCConnections" 
-																   object:[NSString stringWithFormat:@"OSXvnc%d",rfbPort] 
-																 userInfo:[NSDictionary dictionaryWithObject:clientList forKey:@"clientList"]];
-	
-	[pool release];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSMutableArray *clientList = [[NSMutableArray alloc] init];
+    rfbClientPtr myClient = rfbClientHead;
+
+    while (myClient != NULL) {
+        [clientList addObject:@{@"clientIP": @(myClient->host)}];
+        myClient = myClient->next;
+    }
+
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"VNCConnections"
+                                                                   object:[NSString stringWithFormat:@"OSXvnc%d",rfbPort]
+                                                                 userInfo:@{@"clientList": clientList}];
+
+    [pool release];
 
     pthread_mutex_unlock(&rfbClientListMutex);
 }
@@ -130,78 +132,74 @@ void rfbNewClientConnection(int sock) {
  */
 rfbClientPtr rfbReverseConnection(char *host, int port) {
     int sock= -1;
-	struct addrinfo *res, *res0, hint;
-	int errCode;
+    struct addrinfo *res, *res0, hint;
+    int errCode;
     rfbClientPtr cl;
 
-	
-	{
-		// Old IPV4 stuff
-		struct sockaddr_in sin;
-	    bzero(&sin, sizeof(sin));
-		sin.sin_len = sizeof(sin);
-		sin.sin_family = AF_INET;
-		sin.sin_addr.s_addr = inet_addr(host);
-		sin.sin_port = htons(port);
-		if ((int)sin.sin_addr.s_addr == -1) {
-			struct hostent *hostinfo = NULL;
-			//gethostbyname is NOT compatible with 10.1, we'll try calling a cover method on the Jaguar Bundle
-			if ([[NSProcessInfo processInfo] respondsToSelector:@selector(getHostByName:)])
-				hostinfo = (struct hostent *) [[NSProcessInfo processInfo] performSelector:@selector(getHostByName:) withObject:(id)host];
-			if (hostinfo && hostinfo->h_addr) {
-				sin.sin_addr.s_addr = ((struct in_addr *)hostinfo->h_addr)->s_addr;
-			}
-			else {
-				rfbLog("Error resolving reverse host %s\n", host);
-				return NULL;
-			}
-		}
-		
-		if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-			rfbLog("Error creating reverse socket\n");
-		}
-		if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) != 0) {
-			rfbLog("Error connecting to reverse host %s:%d\n", host, port);
-			sock = -1;
-		}		
-	}	
-	
-	if (sock == -1) {
-		hint.ai_family = PF_UNSPEC;
-		hint.ai_socktype = SOCK_STREAM;
-		if ((errCode = getaddrinfo(host, NULL, &hint, &res0)) != 0) {
-			rfbLog("Error resolving reverse host %s: %s\n", host, gai_strerror(errCode));
-		}
-	
-		// Iterate over all the resources looking for one we can connect with with.
-		for(res=res0; res && (sock < 0); res = res->ai_next) {
-			if (res->ai_family == PF_INET6) 
-				((struct sockaddr_in6 *)(res->ai_addr))->sin6_port = port;
-			else if (res->ai_family == PF_INET) 
-				((struct sockaddr_in *)(res->ai_addr))->sin_port = port;
-			else {
-				rfbLog("Error creating reverse socket: Unrecognized protocol family %d\n", res->ai_family);
-				continue;
-			}
-    
-			if ((sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0) {
-				rfbLog("Error creating reverse socket:%s\n", strerror(errno));
-			} else if (connect(sock, res->ai_addr, res->ai_addrlen) != 0) {
-				rfbLog("Error connecting to reverse host%s:%d: %s\n", host, port, strerror(errno));
-				sock = -1;
-			}	
-		}
-		freeaddrinfo(res0);
-	}
-	
-	if (sock < 0)
-		return NULL;
-				
-	cl = rfbNewClient(sock);
-	if (cl) {
-		cl->reverseConnection = TRUE;
-	}
- 	
+    {
+        // Old IPV4 stuff
+        struct sockaddr_in sin;
+        bzero(&sin, sizeof(sin));
+        sin.sin_len = sizeof(sin);
+        sin.sin_family = AF_INET;
+        sin.sin_addr.s_addr = inet_addr(host);
+        sin.sin_port = htons(port);
+        if ((int)sin.sin_addr.s_addr == -1) {
+            struct hostent *hostinfo = gethostbyname(host);
+            if (hostinfo && hostinfo->h_addr) {
+                sin.sin_addr.s_addr = ((struct in_addr *)hostinfo->h_addr)->s_addr;
+            }
+            else {
+                rfbLog("Error resolving reverse host %s", host);
+                return NULL;
+            }
+        }
+
+        if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
+            rfbLog("Error creating reverse socket");
+        }
+        if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) != 0) {
+            rfbLog("Error connecting to reverse host %s:%d", host, port);
+            sock = -1;
+        }
+    }
+
+    if (sock == -1) {
+        hint.ai_family = PF_UNSPEC;
+        hint.ai_socktype = SOCK_STREAM;
+        if ((errCode = getaddrinfo(host, NULL, &hint, &res0)) != 0) {
+            rfbLog("Error resolving reverse host %s: %s", host, gai_strerror(errCode));
+        }
+
+        // Iterate over all the resources looking for one we can connect with with.
+        for(res=res0; res && (sock < 0); res = res->ai_next) {
+            if (res->ai_family == PF_INET6)
+                ((struct sockaddr_in6 *)(res->ai_addr))->sin6_port = port;
+            else if (res->ai_family == PF_INET)
+                ((struct sockaddr_in *)(res->ai_addr))->sin_port = port;
+            else {
+                rfbLog("Error creating reverse socket: unrecognized protocol family %d", res->ai_family);
+                continue;
+            }
+
+            if ((sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0) {
+                rfbLog("Error creating reverse socket: %s", strerror(errno));
+            } else if (connect(sock, res->ai_addr, res->ai_addrlen) != 0) {
+                rfbLog("Error connecting to reverse host %s:%d: %s", host, port, strerror(errno));
+                sock = -1;
+            }
+        }
+        freeaddrinfo(res0);
+    }
+
+    if (sock < 0)
+        return NULL;
+
+    cl = rfbNewClient(sock);
+    if (cl) {
+        cl->reverseConnection = TRUE;
+    }
+
     return cl;
 }
 
@@ -215,17 +213,17 @@ rfbClientPtr rfbNewClient(int sock) {
     rfbClientPtr cl;
     BoxRec box;
     int i;
-	unsigned int addrlen;
-	int bitsPerSample;
+    unsigned int addrlen;
+    int bitsPerSample;
 
     /*
      {
          rfbClientIteratorPtr iterator;
 
-         rfbLog("syncing other clients:\n");
+         rfbLog("syncing other clients:");
          iterator = rfbGetClientIterator();
          while ((cl = rfbClientIteratorNext(iterator)) != NULL) {
-             rfbLog("     %s\n",cl->host);
+             rfbLog("     %s",cl->host);
          }
          rfbReleaseClientIterator(iterator);
      }
@@ -233,25 +231,25 @@ rfbClientPtr rfbNewClient(int sock) {
 
     cl = (rfbClientPtr)xalloc(sizeof(rfbClientRec));
     memset(cl, 0, sizeof(rfbClientRec));
-    
-    cl->sock = sock;
-	if (floor(NSAppKitVersionNumber) > floor(NSAppKitVersionNumber10_1)) {
-		struct sockaddr_in6 addr;
-		char host[NI_MAXHOST];
-		
-		addrlen = sizeof(struct sockaddr_in6);
 
-		host[0] = 0;
-		getnameinfo((struct sockaddr *)&addr, addrlen, host, sizeof(host), NULL, 0, NI_NUMERICHOST); // Not available on 10.1
-		cl->host = strdup(host);
-	}
-	if (!strlen(cl->host)) {
-		struct sockaddr_in addr;
-		addrlen = sizeof(struct sockaddr_in);
-		getpeername(sock, (struct sockaddr *)&addr, &addrlen);
-		cl->host = strdup(inet_ntoa(addr.sin_addr));
-	}
-	
+    cl->sock = sock;
+    if (floor(NSAppKitVersionNumber) > floor(NSAppKitVersionNumber10_1)) {
+        struct sockaddr_in6 addr;
+        char host[NI_MAXHOST];
+
+        addrlen = sizeof(struct sockaddr_in6);
+
+        host[0] = 0;
+        getnameinfo((struct sockaddr *)&addr, addrlen, host, sizeof(host), NULL, 0, NI_NUMERICHOST); // Not available on 10.1
+        cl->host = strdup(host);
+    }
+    if (!strlen(cl->host)) {
+        struct sockaddr_in addr;
+        addrlen = sizeof(struct sockaddr_in);
+        getpeername(sock, (struct sockaddr *)&addr, &addrlen);
+        cl->host = strdup(inet_ntoa(addr.sin_addr));
+    }
+
     pthread_mutex_init(&cl->outputMutex, NULL);
 
     cl->state = RFB_PROTOCOL_VERSION;
@@ -263,7 +261,7 @@ rfbClientPtr rfbNewClient(int sock) {
     cl->swapMouseButtons23 = rfbSwapButtons;         // How to interpret mouse buttons 2 & 3
 
     cl->needNewScreenSize = NO;
-	initPasteboardForClient(cl);
+    initPasteboardForClient(cl);
 
     cl->reverseConnection = FALSE;
     cl->preferredEncoding = rfbEncodingRaw;
@@ -285,38 +283,38 @@ rfbClientPtr rfbNewClient(int sock) {
 
     REGION_INIT(pScreen,&cl->requestedRegion,NullBox,0);
 
-	switch (rfbMaxBitDepth) {
-		case 32:
-		case 16:
-		case 8:		
-			cl->format.bitsPerPixel = max(rfbMaxBitDepth, rfbScreen.bitsPerPixel);
-			bitsPerSample = cl->format.bitsPerPixel << 2;
-			cl->format.depth = bitsPerSample*3;
-			cl->format.bigEndian = !littleEndian;
-			cl->format.trueColour = TRUE;
-			
-			cl->format.redMax = (1 << bitsPerSample) - 1;
-			cl->format.greenMax = (1 << bitsPerSample) - 1;
-			cl->format.blueMax = (1 << bitsPerSample) - 1;
-			
-			cl->format.redShift = bitsPerSample * 2;
-			cl->format.greenShift = bitsPerSample * 1;
-			cl->format.blueShift = bitsPerSample * 0;
-			break;
-		case 0:
-		default:
-			cl->format = rfbServerFormat;
-			break;
-	}
-	// This will 
-	rfbSetTranslateFunctionUsingFormat(cl, rfbServerFormat);
+    switch (rfbMaxBitDepth) {
+        case 32:
+        case 16:
+        case 8:
+            cl->format.bitsPerPixel = max(rfbMaxBitDepth, rfbScreen.bitsPerPixel);
+            bitsPerSample = cl->format.bitsPerPixel << 2;
+            cl->format.depth = bitsPerSample*3;
+            cl->format.bigEndian = !littleEndian;
+            cl->format.trueColour = TRUE;
+
+            cl->format.redMax = (1 << bitsPerSample) - 1;
+            cl->format.greenMax = (1 << bitsPerSample) - 1;
+            cl->format.blueMax = (1 << bitsPerSample) - 1;
+
+            cl->format.redShift = bitsPerSample * 2;
+            cl->format.greenShift = bitsPerSample * 1;
+            cl->format.blueShift = bitsPerSample * 0;
+            break;
+        case 0:
+        default:
+            cl->format = rfbServerFormat;
+            break;
+    }
+    // This will
+    rfbSetTranslateFunctionUsingFormat(cl, rfbServerFormat);
 
     /* SERVER SCALING EXTENSIONS -- Server Scaling is off by default */
     cl->scalingFactor = 1;
-	cl->screenBuffer = rfbGetFramebuffer();
+    cl->screenBuffer = rfbGetFramebuffer();
     cl->scalingFrameBuffer = cl->screenBuffer;
-	cl->scalingPaddedWidthInBytes = rfbScreen.paddedWidthInBytes;
-	
+    cl->scalingPaddedWidthInBytes = rfbScreen.paddedWidthInBytes;
+
     cl->tightCompressLevel = TIGHT_DEFAULT_COMPRESSION;
     cl->tightQualityLevel = -1;
     for (i = 0; i < 4; i++)
@@ -328,7 +326,7 @@ rfbClientPtr rfbNewClient(int sock) {
     cl->enableCursorPosUpdates = FALSE;
     cl->desktopSizeUpdate = FALSE;
     cl->immediateUpdate = FALSE;
-    
+
     pthread_mutex_lock(&rfbClientListMutex);
     cl->next = rfbClientHead;
     cl->prev = NULL;
@@ -358,14 +356,18 @@ rfbClientPtr rfbNewClient(int sock) {
     cl->client_zlibAfterBufSize = 0;
     cl->client_zlibAfterBuf = NULL;
     cl->client_zlibAfterBufLen = 0;
-    
-    sprintf(pv,rfbProtocolVersionFormat,rfbProtocolMajorVersion, rfbProtocolMinorVersion);
+
+    snprintf(pv, sizeof(pv), rfbProtocolVersionFormat, rfbProtocolMajorVersion, rfbProtocolMinorVersion);
 
     if (WriteExact(cl, pv, sz_rfbProtocolVersionMsg) < 0) {
         rfbLogPerror("rfbNewClient: write");
         rfbCloseClient(cl);
         return NULL;
     }
+    
+    // wake up screen in case monitor off (avoid blank VNC screen):
+    IOPMAssertionDeclareUserActivity(CFSTR("VNC user is logged in"),
+        kIOPMUserActiveLocal, &userActivityLastAssertionId);
 
     return cl;
 }
@@ -382,8 +384,8 @@ void rfbClientConnectionGone(rfbClientPtr cl) {
     // RedstoneOSX - Track and release depressed modifier keys whenever the client disconnects
     keyboardReleaseKeysForClient(cl);
 
-	freePasteboardForClient(cl);
-	
+    freePasteboardForClient(cl);
+
     pthread_mutex_lock(&rfbClientListMutex);
 
     /* Release the compression state structures if any. */
@@ -410,13 +412,13 @@ void rfbClientConnectionGone(rfbClientPtr cl) {
 
     REGION_UNINIT(pScreen,&cl->modifiedRegion);
 
-	if (cl->major && cl->minor) {
-		// If it didn't get so far as to send a protocol then let's just ignore
-		// For Clients with no activity just return with no log
-		rfbLog("Client %s disconnected\n",cl->host);
-		rfbSendClientList();
-		rfbPrintStats(cl);
-	}
+    if (cl->major && cl->minor) {
+        // If it didn't get so far as to send a protocol then let's just ignore
+        // For Clients with no activity just return with no log
+        rfbLog("Client %s disconnected", cl->host);
+        rfbSendClientList();
+        rfbPrintStats(cl);
+    }
 
     FreeZrleData(cl);
 
@@ -436,7 +438,7 @@ void rfbClientConnectionGone(rfbClientPtr cl) {
 
     xfree(cl);
     // Not sure why but this log message seems to prevent a crash
-    // rfbLog("Client gone\n");
+    // rfbLog("Client gone");
 }
 
 
@@ -477,7 +479,7 @@ void rfbProcessClientProtocolVersion(rfbClientPtr cl) {
 
     if ((n = ReadExact(cl, pv, sz_rfbProtocolVersionMsg)) <= 0) {
         if (n == 0)
-            rfbLog("rfbProcessClientProtocolVersion: client gone\n");
+            rfbLog("rfbProcessClientProtocolVersion: client gone");
         else
             rfbLogPerror("rfbProcessClientProtocolVersion: read");
         rfbCloseClient(cl);
@@ -485,18 +487,18 @@ void rfbProcessClientProtocolVersion(rfbClientPtr cl) {
     }
 
     pv[sz_rfbProtocolVersionMsg] = 0;
-    if (sscanf(pv,rfbProtocolVersionFormat,&cl->major,&cl->minor) != 2) {
-		if (strncmp(pv,"GET",3)) // Don't log if it was a browser
-			rfbLog("rfbProcessClientProtocolVersion: not a valid RFB client\n");
+    if (sscanf(pv, rfbProtocolVersionFormat, &cl->major, &cl->minor) != 2) {
+        if (strncmp(pv,"GET",3)) // Don't log if it was a browser
+            rfbLog("rfbProcessClientProtocolVersion: not a valid RFB client");
         rfbCloseClient(cl);
         return;
     }
-    rfbLog("Protocol version %d.%d\n", cl->major, cl->minor);
+    rfbLog("Protocol version %d.%d", cl->major, cl->minor);
 
     if (cl->major != rfbProtocolMajorVersion) {
         /* Major version mismatch - send a ConnFailed message */
-        rfbLog("Major version mismatch\n");
-        sprintf(failureReason,
+        rfbLog("Major version mismatch");
+        snprintf(failureReason, sizeof(failureReason),
                 "RFB protocol version mismatch - server %d.%d, client %d.%d",
                 rfbProtocolMajorVersion,rfbProtocolMinorVersion,cl->major,cl->minor);
         rfbClientConnFailed(cl, failureReason);
@@ -505,11 +507,11 @@ void rfbProcessClientProtocolVersion(rfbClientPtr cl) {
 
     if (cl->minor != rfbProtocolMinorVersion) {
         /* Minor version mismatch - warn but try to continue */
-        rfbLog("Ignoring minor version mismatch\n");
+        rfbLog("Ignoring minor version mismatch");
     }
 
-	rfbSendClientList();
-	
+    rfbSendClientList();
+
     rfbAuthNewClient(cl);
 }
 
@@ -521,7 +523,7 @@ void rfbProcessClientProtocolVersion(rfbClientPtr cl) {
 
 void rfbClientConnFailed(rfbClientPtr cl, char *reason) {
     char *buf;
-    int len = strlen(reason);
+    size_t len = strlen(reason);
 
     buf = (char *)xalloc(8 + len);
     ((CARD32 *)buf)[0] = Swap32IfLE(rfbConnFailed);
@@ -544,13 +546,14 @@ void rfbProcessClientInitMessage(rfbClientPtr cl) {
     rfbClientInitMsg ci;
     char buf[256];
     rfbServerInitMsg *si = (rfbServerInitMsg *)buf;
-    int len, n;
+    int n;
+    size_t len;
     rfbClientIteratorPtr iterator;
     rfbClientPtr otherCl;
 
     if ((n = ReadExact(cl, (char *)&ci,sz_rfbClientInitMsg)) <= 0) {
         if (n == 0)
-            rfbLog("rfbProcessClientInitMessage: client gone\n");
+            rfbLog("rfbProcessClientInitMessage: client gone");
         else
             rfbLogPerror("rfbProcessClientInitMessage: read");
         rfbCloseClient(cl);
@@ -586,8 +589,8 @@ void rfbProcessClientInitMessage(rfbClientPtr cl) {
             iterator = rfbGetClientIterator();
             while ((otherCl = rfbClientIteratorNext(iterator)) != NULL) {
                 if ((otherCl != cl) && (otherCl->state == RFB_NORMAL)) {
-                    rfbLog("-dontdisconnect: Not shared & existing client\n");
-                    rfbLog("  refusing new client %s\n", cl->host);
+                    rfbLog("-dontdisconnect: Not shared & existing client");
+                    rfbLog("  refusing new client %s", cl->host);
                     rfbCloseClient(cl);
                     rfbReleaseClientIterator(iterator);
                     return;
@@ -598,7 +601,7 @@ void rfbProcessClientInitMessage(rfbClientPtr cl) {
             iterator = rfbGetClientIterator();
             while ((otherCl = rfbClientIteratorNext(iterator)) != NULL) {
                 if ((otherCl != cl) && (otherCl->state == RFB_NORMAL)) {
-                    rfbLog("Not shared - closing connection to client %s\n",
+                    rfbLog("Not shared - closing connection to client %s",
                            otherCl->host);
                     rfbCloseClient(otherCl);
                 }
@@ -629,7 +632,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
     switch (msg.type) {
 
         case rfbSetPixelFormat:
-		{
+        {
             if ((n = ReadExact(cl, ((char *)&msg) + 1,
                                sz_rfbSetPixelFormatMsg - 1)) <= 0) {
                 if (n != 0)
@@ -638,27 +641,27 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
                 return;
             }
 
-			if (!rfbMaxBitDepth || msg.spf.format.bitsPerPixel <= rfbMaxBitDepth) {
-				cl->format.bitsPerPixel = msg.spf.format.bitsPerPixel;
-				cl->format.depth = msg.spf.format.depth;
-				cl->format.bigEndian = (msg.spf.format.bigEndian ? 1 : 0);
-				cl->format.trueColour = (msg.spf.format.trueColour ? 1 : 0);
-				cl->format.redMax = Swap16IfLE(msg.spf.format.redMax);
-				cl->format.greenMax = Swap16IfLE(msg.spf.format.greenMax);
-				cl->format.blueMax = Swap16IfLE(msg.spf.format.blueMax);
-				cl->format.redShift = msg.spf.format.redShift;
-				cl->format.greenShift = msg.spf.format.greenShift;
-				cl->format.blueShift = msg.spf.format.blueShift;
-				rfbSetTranslateFunction(cl);
-			}
-			else
-				rfbLog("rfbProcessClientNormalMessage: Unable to set requested bit depth %d to greater than MaxBitDepth (%d)", msg.spf.format.bitsPerPixel, rfbMaxBitDepth);
-				
+            if (!rfbMaxBitDepth || msg.spf.format.bitsPerPixel <= rfbMaxBitDepth) {
+                cl->format.bitsPerPixel = msg.spf.format.bitsPerPixel;
+                cl->format.depth = msg.spf.format.depth;
+                cl->format.bigEndian = (msg.spf.format.bigEndian ? 1 : 0);
+                cl->format.trueColour = (msg.spf.format.trueColour ? 1 : 0);
+                cl->format.redMax = Swap16IfLE(msg.spf.format.redMax);
+                cl->format.greenMax = Swap16IfLE(msg.spf.format.greenMax);
+                cl->format.blueMax = Swap16IfLE(msg.spf.format.blueMax);
+                cl->format.redShift = msg.spf.format.redShift;
+                cl->format.greenShift = msg.spf.format.greenShift;
+                cl->format.blueShift = msg.spf.format.blueShift;
+                rfbSetTranslateFunction(cl);
+            }
+            else
+                rfbLog("rfbProcessClientNormalMessage: Unable to set requested bit depth %d to greater than MaxBitDepth (%d)", msg.spf.format.bitsPerPixel, rfbMaxBitDepth);
+
             return;
-		}
+        }
 
         case rfbFixColourMapEntries:
-		{
+        {
             if ((n = ReadExact(cl, ((char *)&msg) + 1,
                                sz_rfbFixColourMapEntriesMsg - 1)) <= 0) {
                 if (n != 0)
@@ -670,8 +673,8 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
                    "FixColourMapEntries unsupported\n");
             rfbCloseClient(cl);
             return;
-		}
-			
+        }
+
         case rfbSetEncodings: {
             int i;
             CARD32 enc;
@@ -720,70 +723,70 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
                     case rfbEncodingZRLE:
                         if (cl->preferredEncoding == -1) {
                             cl->preferredEncoding = enc;
-                            rfbLog("ENCODING: %s for client %s\n", encNames[cl->preferredEncoding], cl->host);
+                            rfbLog("ENCODING: %s for client %s", encNames[cl->preferredEncoding], cl->host);
                         }
                         break;
-					case rfbEncodingUltra:
-						rfbLog("\tULTRA Encoding not supported(ignored): %u (%X)\n", (int)enc, (int)enc);
-						break;
+                    case rfbEncodingUltra:
+                        rfbLog("\tULTRA Encoding not supported(ignored): %u (%X)", (int)enc, (int)enc);
+                        break;
                         /* PSEUDO_ENCODINGS */
                     case rfbEncodingLastRect:
-                        rfbLog("\tEnabling LastRect protocol extension for client %s\n", cl->host);
+                        rfbLog("\tEnabling LastRect protocol extension for client %s", cl->host);
                         cl->enableLastRectEncoding = TRUE;
                         break;
                     case rfbEncodingXCursor:
-                        //rfbLog("Enabling XCursor protocol extension for client %s\n", cl->host);
+                        //rfbLog("Enabling XCursor protocol extension for client %s", cl->host);
                         cl->enableXCursorShapeUpdates = TRUE;
                         break;
                     case rfbEncodingRichCursor:
-                        rfbLog("\tEnabling Cursor Shape protocol extension for client %s\n", cl->host);
+                        rfbLog("\tEnabling Cursor Shape protocol extension for client %s", cl->host);
                         cl->useRichCursorEncoding = TRUE;
                         cl->currentCursorSeed = 0;
                         break;
                     case rfbEncodingPointerPos:
-                        rfbLog("\tEnabling Cursor Position protocol extension for client %s\n", cl->host);
+                        rfbLog("\tEnabling Cursor Position protocol extension for client %s", cl->host);
                         cl->enableCursorPosUpdates = TRUE;
                         cl->clientCursorLocation = CGPointMake(-1.0, -1.0);
                         break;
                     case rfbEncodingDesktopResize:
-                        rfbLog("\tEnabling Dynamic Desktop Sizing for client %s\n", cl->host);
+                        rfbLog("\tEnabling Dynamic Desktop Sizing for client %s", cl->host);
                         cl->desktopSizeUpdate = TRUE;
                         break;
                     case rfbImmediateUpdate:
-                        rfbLog("\tEnabling Immediate updates for client " "%s\n", cl->host);
+                        rfbLog("\tEnabling Immediate updates for client " "%s", cl->host);
                         cl->immediateUpdate = TRUE;
                         break;
-					case rfbPasteboardRequest:
-						rfbLog("\tEnabling Pasteboard Request " "%s\n", cl->host);
-						cl->generalPBLastChange = -2; // This will cause it to send a single update that shows the current PB
-						break;
-					case rfbRichPasteboard:
-						if (!rfbDisableRichClipboards) {
-							rfbLog("\tEnabling Rich Pasteboard " "%s\n", cl->host);
-							cl->richClipboardSupport = TRUE;
-							// The -2 will already trigger force sending the PB, so we don't need to send the ack.
-							if (cl->generalPBLastChange != -2) 
-								cl->generalPBLastChange = -3;
-						}
-						break;
-					
+                    case rfbPasteboardRequest:
+                        rfbLog("\tEnabling pasteboard request " "%s", cl->host);
+                        cl->generalPBLastChange = -2; // This will cause it to send a single update that shows the current PB
+                        break;
+                    case rfbRichPasteboard:
+                        if (!rfbDisableRichClipboards) {
+                            rfbLog("\tEnabling rich pasteboard " "%s", cl->host);
+                            cl->richClipboardSupport = TRUE;
+                            // The -2 will already trigger force sending the PB, so we don't need to send the ack.
+                            if (cl->generalPBLastChange != -2)
+                                cl->generalPBLastChange = -3;
+                        }
+                        break;
+
                         // Tight encoding options
                     default:
                         if ( enc >= (CARD32)rfbEncodingCompressLevel0 &&
                              enc <= (CARD32)rfbEncodingCompressLevel9 ) {
                             cl->zlibCompressLevel = enc & 0x0F;
                             cl->tightCompressLevel = enc & 0x0F;
-                            rfbLog("\tUsing compression level %d for client %s\n",
+                            rfbLog("\tUsing compression level %d for client %s",
                                    cl->tightCompressLevel, cl->host);
                         }
                         else if ( enc >= (CARD32)rfbEncodingQualityLevel0 &&
                                     enc <= (CARD32)rfbEncodingQualityLevel9 ) {
                             cl->tightQualityLevel = enc & 0x0F;
-                            rfbLog("\tUsing jpeg image quality level %d for client %s\n",
+                            rfbLog("\tUsing jpeg image quality level %d for client %s",
                                    cl->tightQualityLevel, cl->host);
                         }
                         else {
-                            rfbLog("\tUnknown Encoding Type(ignored): %u (%X)\n", (int)enc, (int)enc);
+                            rfbLog("\tUnknown Encoding Type(ignored): %u (%X)", (int)enc, (int)enc);
                         }
                 }
             }
@@ -797,7 +800,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
             // Force a new update to the client
             if (rfbShouldSendNewCursor(cl) || (rfbShouldSendNewPosition(cl)))
                 pthread_cond_signal(&cl->updateCond);
-            
+
             return;
         }
 
@@ -815,7 +818,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
                 return;
             }
 
-            //rfbLog("FUR: %d (%d,%d x %d,%d)\n", msg.fur.incremental, msg.fur.x, msg.fur.y,  msg.fur.w, msg.fur.h);
+            //rfbLog("FUR: %d (%d,%d x %d,%d)", msg.fur.incremental, msg.fur.x, msg.fur.y,  msg.fur.w, msg.fur.h);
 
             box.x1 = Swap16IfLE(msg.fur.x)*cl->scalingFactor;
             box.y1 = Swap16IfLE(msg.fur.y)*cl->scalingFactor;
@@ -838,7 +841,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
         }
 
         case rfbKeyEvent:
-		{
+        {
             if (!cl->disableRemoteEvents)
                 cl->rfbKeyEventsRcvd++;
 
@@ -849,17 +852,12 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
                 rfbCloseClient(cl);
                 return;
             }
-            if (msg.ke.down) {
-                BSkeyPressTime = getMStime() * 1000; //[[NSDate date] timeIntervalSince1970];
-                BSkeyPressed = true;
-                //rfbLog("[BrowserStack] client key event.. at %e", BSkeyPressTime);
-            }
 
                 if (!cl->disableRemoteEvents)
                     KbdAddEvent(msg.ke.down, (KeySym)Swap32IfLE(msg.ke.key), cl);
 
                 return;
-		}
+        }
         case rfbPointerEvent: {
             if (!cl->disableRemoteEvents)
                 cl->rfbPointerEventsRcvd++;
@@ -896,30 +894,30 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
                 return;
             }
 
-			msg.cct.length = Swap32IfLE(msg.cct.length);
+            msg.cct.length = Swap32IfLE(msg.cct.length);
 
-			str = (char *)xalloc(msg.cct.length);
-			
-			if ((n = ReadExact(cl, str, msg.cct.length)) <= 0) {
-				if (n != 0)
-					rfbLogPerror("rfbProcessClientNormalMessage: read");
-				xfree(str);
-				rfbCloseClient(cl);
-				return;
-			}
+            str = (char *)xalloc(msg.cct.length);
 
-			if (!cl->disableRemoteEvents) {
+            if ((n = ReadExact(cl, str, msg.cct.length)) <= 0) {
+                if (n != 0)
+                    rfbLogPerror("rfbProcessClientNormalMessage: read");
+                xfree(str);
+                rfbCloseClient(cl);
+                return;
+            }
+
+            if (!cl->disableRemoteEvents) {
                 rfbSetCutText(cl, str, msg.cct.length);
-			}
-			
-			xfree(str);
+            }
+
+            xfree(str);
             return;
         }
 
         /* SERVER SCALING EXTENSIONS */
-		case rfbSetScaleFactorULTRA:
-		case rfbSetScaleFactor: 
-		{
+        case rfbSetScaleFactorULTRA:
+        case rfbSetScaleFactor:
+        {
             rfbReSizeFrameBufferMsg rsfb;
             if ((n = ReadExact(cl, ((char *)&msg) + 1,
                                sz_rfbSetScaleFactorMsg-1)) <= 0) {
@@ -930,72 +928,72 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
             }
 
             if( cl->scalingFactor != msg.ssf.scale ){
-				const unsigned long csh = (rfbScreen.height+msg.ssf.scale-1) / msg.ssf.scale;
-				const unsigned long csw = (rfbScreen.width +msg.ssf.scale-1) / msg.ssf.scale;
+                const unsigned long csh = (rfbScreen.height+msg.ssf.scale-1) / msg.ssf.scale;
+                const unsigned long csw = (rfbScreen.width +msg.ssf.scale-1) / msg.ssf.scale;
 
-				if (cl->scalingFactor != 1)
-					free(cl->scalingFrameBuffer);
-								
+                if (cl->scalingFactor != 1)
+                    free(cl->scalingFrameBuffer);
+
                 cl->scalingFactor = msg.ssf.scale;
 
-				rfbLog("Server Side Scaling: %d for client %s\n", msg.ssf.scale, cl->host);
-							
-				if (cl->scalingFactor == 1) {
-					cl->scalingFrameBuffer = cl->screenBuffer;
-					cl->scalingPaddedWidthInBytes = rfbScreen.paddedWidthInBytes;
-				}
-				else {
-					cl->scalingFrameBuffer = malloc( csw*csh*rfbScreen.bitsPerPixel/8 );
-					cl->scalingPaddedWidthInBytes = csw * rfbScreen.bitsPerPixel/8;
-				}
+                rfbLog("Server Side Scaling: %d for client %s", msg.ssf.scale, cl->host);
 
-				/* Now notify the client of the new desktop area */
-				if (msg.type == rfbSetScaleFactor) {
-					rsfb.type = rfbReSizeFrameBuffer;
-					rsfb.desktop_w = Swap16IfLE(rfbScreen.width);
-					rsfb.desktop_h = Swap16IfLE(rfbScreen.height);
-					rsfb.buffer_w = Swap16IfLE(csw);
-					rsfb.buffer_h = Swap16IfLE(csh);
-					
-					if (WriteExact(cl, (char *)&rsfb, sizeof(rsfb)) < 0) {
-						rfbLogPerror("rfbProcessClientNormalMessage: write");
-						rfbCloseClient(cl);
-						return;
-					}
-				}
-				else {
-					// What does UltraVNC expect here probably just a resize event
-					rfbFramebufferUpdateMsg *fu = (rfbFramebufferUpdateMsg *)cl->updateBuf;
+                if (cl->scalingFactor == 1) {
+                    cl->scalingFrameBuffer = cl->screenBuffer;
+                    cl->scalingPaddedWidthInBytes = rfbScreen.paddedWidthInBytes;
+                }
+                else {
+                    cl->scalingFrameBuffer = malloc( csw*csh*rfbScreen.bitsPerPixel/8 );
+                    cl->scalingPaddedWidthInBytes = csw * rfbScreen.bitsPerPixel/8;
+                }
+
+                /* Now notify the client of the new desktop area */
+                if (msg.type == rfbSetScaleFactor) {
+                    rsfb.type = rfbReSizeFrameBuffer;
+                    rsfb.desktop_w = Swap16IfLE(rfbScreen.width);
+                    rsfb.desktop_h = Swap16IfLE(rfbScreen.height);
+                    rsfb.buffer_w = Swap16IfLE(csw);
+                    rsfb.buffer_h = Swap16IfLE(csh);
+
+                    if (WriteExact(cl, (char *)&rsfb, sizeof(rsfb)) < 0) {
+                        rfbLogPerror("rfbProcessClientNormalMessage: write");
+                        rfbCloseClient(cl);
+                        return;
+                    }
+                }
+                else {
+                    // What does UltraVNC expect here probably just a resize event
+                    rfbFramebufferUpdateMsg *fu = (rfbFramebufferUpdateMsg *)cl->updateBuf;
                     fu->type = rfbFramebufferUpdate;
                     fu->nRects = Swap16IfLE(1);
                     cl->ublen = sz_rfbFramebufferUpdateMsg;
-					
+
                     rfbSendScreenUpdateEncoding(cl);
-				}
-			}
-			
+                }
+            }
+
             return;
         }
 
-		case rfbRichClipboardAvailable:
-			rfbReceiveRichClipboardAvailable(cl);
-			return;
-			
-		case rfbRichClipboardRequest:
-			rfbReceiveRichClipboardRequest(cl);
-			return;
-			
-		case rfbRichClipboardData:
-			rfbReceiveRichClipboardData(cl);
-			return;
-			
-        default: 
-		{
-            rfbLog("ERROR: Client Sent Message: unknown message type %d\n", msg.type);
-            rfbLog("...... Closing connection to client %s\n", cl->host);
+        case rfbRichClipboardAvailable:
+            rfbReceiveRichClipboardAvailable(cl);
+            return;
+
+        case rfbRichClipboardRequest:
+            rfbReceiveRichClipboardRequest(cl);
+            return;
+
+        case rfbRichClipboardData:
+            rfbReceiveRichClipboardData(cl);
+            return;
+
+        default:
+        {
+            rfbLog("ERROR: Client Sent Message: unknown message type %d", msg.type);
+            rfbLog("...... Closing connection to client %s", cl->host);
             rfbCloseClient(cl);
             return;
-		}
+        }
     }
 }
 
@@ -1006,7 +1004,7 @@ void rfbProcessClientNormalMessage(rfbClientPtr cl) {
 
 Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
     int i;
-    int nUpdateRegionRects = 0;
+    uint32_t nUpdateRegionRects = 0;
     Bool sendRichCursorEncoding = FALSE;
     Bool sendCursorPositionEncoding = FALSE;
 
@@ -1061,75 +1059,58 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
             sendCursorPositionEncoding = TRUE;
             nUpdateRegionRects++;
         }
-		if (cl->needNewScreenSize) {
-			nUpdateRegionRects++;
-		}        
+        if (cl->needNewScreenSize) {
+            nUpdateRegionRects++;
+        }
     }
 
     fu->type = rfbFramebufferUpdate;
     fu->nRects = Swap16IfLE(nUpdateRegionRects);
     cl->ublen = sz_rfbFramebufferUpdateMsg;
-	
-    //rfbLog("[BrowserStack] Pushing %d rectangles now", REGION_NUM_RECTS(&updateRegion));
-    double minuteDifference;
-    //if (BSkeyPressed) {
-        minuteDifference = getMStime() * 1000 - BSkeyPressTime;
-    //}
-    BSDataSize = cl->rfbBytesSent[rfbEncodingTight];
-    BSnumberOfJpegRectangles = 0;
-    BSnumberOfSingleRect = 0;
-    BSJpegProcessTime = 0;
-    BSSendDataTime = 0;
-    BSSendRectTime = 0;
-    BSCompressionTime = 0;
-    
+
     // Sometimes send the mouse cursor update (this can fail with big cursors so we'll try it first
     if (sendRichCursorEncoding) {
         if (!rfbSendRichCursorUpdate(cl)) {
-            // rfbLog("Error Sending Cursor\n"); // We'll log at the lower level if it fails and only fail a few times
+            // rfbLog("Error Sending Cursor"); // We'll log at the lower level if it fails and only fail a few times
             // return FALSE;  Since this is the first update we can "skip the cursor update" instead of failing the whole thing
-			--nUpdateRegionRects;
-			fu->nRects = Swap16IfLE(nUpdateRegionRects);
+            --nUpdateRegionRects;
+            fu->nRects = Swap16IfLE(nUpdateRegionRects);
         }
     }
     if (sendCursorPositionEncoding) {
         if (!rfbSendCursorPos(cl)) {
-            rfbLog("Error Sending Cursor Position\n");
+            rfbLog("Error Sending Cursor Position");
             return FALSE;
         }
 
     }
-	if (cl->needNewScreenSize) {
+    if (cl->needNewScreenSize) {
         if (rfbSendScreenUpdateEncoding(cl)) {
             cl->needNewScreenSize = FALSE;
         }
         else {
-            rfbLog("Error Sending New Screen Size\n");
+            rfbLog("Error Sending New Screen Size");
             return FALSE;
-        }            
+        }
     }
-	
-	cl->screenBuffer = rfbGetFramebuffer();
-    long BStotalRectangleSize = 0;
-    double BSTimeToTakeScreenshot;
+
+    cl->screenBuffer = rfbGetFramebuffer();
+
     for (i = 0; i < REGION_NUM_RECTS(&updateRegion); i++) {
-        int x = REGION_RECTS(&updateRegion)[i].x1;
-        int y = REGION_RECTS(&updateRegion)[i].y1;
-        int w = REGION_RECTS(&updateRegion)[i].x2 - x;
-        int h = REGION_RECTS(&updateRegion)[i].y2 - y;
-        
-        BStotalRectangleSize += w*h;
-        //rfbLog("rectangle size : %d", w*h);
-		BSTimeToTakeScreenshot = getMStime() * 1000;
-		rfbGetFramebufferUpdateInRect(x,y,w,h);
-        BSTimeToTakeScreenshot = getMStime() * 1000 - BSTimeToTakeScreenshot;
-		
-		// Refresh with latest pointer (should be "read-locked" throughout here with CG but I don't see that option)
-		if (cl->scalingFactor != 1)
-			CopyScalingRect( cl, &x, &y, &w, &h, TRUE);
-		else 
-			cl->scalingFrameBuffer = cl->screenBuffer;
-		
+        uint32_t x = REGION_RECTS(&updateRegion)[i].x1;
+        uint32_t y = REGION_RECTS(&updateRegion)[i].y1;
+        uint32_t w = REGION_RECTS(&updateRegion)[i].x2 - x;
+        uint32_t h = REGION_RECTS(&updateRegion)[i].y2 - y;
+
+        rfbGetFramebufferUpdateInRect(x,y,w,h);
+
+
+        // Refresh with latest pointer (should be "read-locked" throughout here with CG but I don't see that option)
+        if (cl->scalingFactor != 1)
+            CopyScalingRect( cl, &x, &y, &w, &h, TRUE);
+        else
+            cl->scalingFrameBuffer = cl->screenBuffer;
+
         cl->rfbRawBytesEquivalent += (sz_rfbFramebufferUpdateRectHeader
                                       + w * (cl->format.bitsPerPixel / 8) * h);
 
@@ -1177,17 +1158,6 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
         }
     }
 
-    //rfbLog("[BrowserStack] Pushed %d rectangles!", REGION_NUM_RECTS(&updateRegion));
-    //if (BSkeyPressed) {
-    if (BStotalRectangleSize > 0) {
-        double minuteDifference1 = getMStime() * 1000 - BSkeyPressTime;
-        if (BStotalRectangleSize > 9000) {
-            rfbLog("[BrowserStack] %d, %d, %f, %f, %f, %d, %f, %f, %f, %f, %d, %d", REGION_NUM_RECTS(&updateRegion), BStotalRectangleSize, minuteDifference, BSTimeToTakeScreenshot, (minuteDifference1 - minuteDifference - BSSendDataTime), (cl->rfbBytesSent[rfbEncodingTight] - BSDataSize), BSJpegProcessTime, BSSendDataTime, BSCompressionTime, BSSendRectTime, BSnumberOfJpegRectangles, BSnumberOfSingleRect);
-            //rfbLog("[BrowserStack] %d, %d, %f, %f, %d, %f, %f, %f, %f, %d, %d", REGION_NUM_RECTS(&updateRegion), BStotalRectangleSize, minuteDifference*1000, (minuteDifference1 - minuteDifference)*1000, (cl->rfbBytesSent[rfbEncodingTight] - BSDataSize), BSJpegProcessTime, BSSendDataTime, BSCompressionTime, BSSendRectTime, BSnumberOfJpegRectangles, BSnumberOfSingleRect);
-        }
-    }
-    //}
-    BSkeyPressed = false;
     if (nUpdateRegionRects == 0xFFFF && !rfbSendLastRectMarker(cl))
         return FALSE;
 
@@ -1199,7 +1169,7 @@ Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion) {
 
 Bool rfbSendScreenUpdateEncoding(rfbClientPtr cl) {
     rfbFramebufferUpdateRectHeader rect;
-				
+
     if (cl->ublen + sz_rfbFramebufferUpdateRectHeader > UPDATE_BUF_SIZE) {
         if (!rfbSendUpdateBuf(cl))
             return FALSE;
@@ -1211,7 +1181,7 @@ Bool rfbSendScreenUpdateEncoding(rfbClientPtr cl) {
     rect.r.h = Swap16IfLE((rfbScreen.height+cl->scalingFactor-1) / cl->scalingFactor);
     rect.encoding = Swap32IfLE(rfbEncodingDesktopResize);
 
-    memcpy(&cl->updateBuf[cl->ublen], (char *)&rect,sz_rfbFramebufferUpdateRectHeader);
+    memcpy(&cl->updateBuf[cl->ublen], &rect, sz_rfbFramebufferUpdateRectHeader);
     cl->ublen += sz_rfbFramebufferUpdateRectHeader;
 
     cl->rfbRectanglesSent[rfbStatsDesktopResize]++;
@@ -1243,7 +1213,7 @@ Bool rfbSendRectEncodingRaw(rfbClientPtr cl, int x, int y, int w, int h) {
     rect.r.h = Swap16IfLE(h);
     rect.encoding = Swap32IfLE(rfbEncodingRaw);
 
-    memcpy(&cl->updateBuf[cl->ublen], (char *)&rect,sz_rfbFramebufferUpdateRectHeader);
+    memcpy(&cl->updateBuf[cl->ublen], &rect, sz_rfbFramebufferUpdateRectHeader);
     cl->ublen += sz_rfbFramebufferUpdateRectHeader;
 
     cl->rfbRectanglesSent[rfbEncodingRaw]++;
@@ -1305,7 +1275,7 @@ Bool rfbSendLastRectMarker(rfbClientPtr cl) {
     rect.r.w = 0;
     rect.r.h = 0;
 
-    memcpy(&cl->updateBuf[cl->ublen], (char *)&rect,sz_rfbFramebufferUpdateRectHeader);
+    memcpy(&cl->updateBuf[cl->ublen], &rect, sz_rfbFramebufferUpdateRectHeader);
     cl->ublen += sz_rfbFramebufferUpdateRectHeader;
 
     cl->rfbLastRectMarkersSent++;
@@ -1328,7 +1298,7 @@ Bool rfbSendUpdateBuf(rfbClientPtr cl) {
      }
      fprintf(stderr,"\n");
      */
-    double t = getMStime();
+
     if (WriteExact(cl, cl->updateBuf, cl->ublen) < 0) {
         rfbLogPerror("rfbSendUpdateBuf: write");
         rfbCloseClient(cl);
@@ -1336,7 +1306,6 @@ Bool rfbSendUpdateBuf(rfbClientPtr cl) {
     }
 
     cl->ublen = 0;
-    BSSendDataTime += (getMStime()*1000 - t*1000);
     return TRUE;
 }
 
@@ -1345,7 +1314,7 @@ Bool rfbSendUpdateBuf(rfbClientPtr cl) {
  * rfbSendServerCutText sends a ServerCutText message to all the clients.
  */
 
-void rfbSendServerCutText(rfbClientPtr cl, char *str, int len) {
+void rfbSendServerCutText(rfbClientPtr cl, char *str, size_t len) {
     rfbServerCutTextMsg sct;
 
     sct.type = rfbServerCutText;
@@ -1390,17 +1359,19 @@ void rfbSendServerCutText(rfbClientPtr cl, char *str, int len) {
  */
 
 /* SERVER SCALING EXTENSIONS */
-void CopyScalingRect( rfbClientPtr cl, int* x, int* y, int* w, int* h, Bool bDoScaling ){
-    unsigned long cx, cy, cw, ch;
-    unsigned long rx, ry, rw, rh;
+static void CopyScalingRect(rfbClientPtr cl,
+                            uint32_t* x, uint32_t* y, uint32_t* w, uint32_t* h,
+                            bool bDoScaling)
+{
+    uint32_t cx, cy, cw, ch;
     unsigned char* srcptr;
     unsigned char* dstptr;
     unsigned char* tmpptr;
     unsigned long pixel_value=0, red, green, blue;
     unsigned long xx, yy, u, v;
     const unsigned long bytesPerPixel = rfbScreen.bitsPerPixel/8;
-    const unsigned long csh = (rfbScreen.height+cl->scalingFactor-1)/ cl->scalingFactor;
-    const unsigned long csw = (rfbScreen.width +cl->scalingFactor-1)/ cl->scalingFactor;
+    const uint32_t csh = (rfbScreen.height+cl->scalingFactor-1)/ cl->scalingFactor;
+    const uint32_t csw = (rfbScreen.width +cl->scalingFactor-1)/ cl->scalingFactor;
 
     cy = (*y) / cl->scalingFactor;
     ch = (*h+cl->scalingFactor-1) / cl->scalingFactor+1;
@@ -1421,10 +1392,12 @@ void CopyScalingRect( rfbClientPtr cl, int* x, int* y, int* w, int* h, Bool bDoS
     }
 
     if( bDoScaling ){
-        ry = cy * cl->scalingFactor;
-        rh = ch * cl->scalingFactor;
-        rx = cx * cl->scalingFactor;
-        rw = cw * cl->scalingFactor;
+        uint32_t rx = cx * cl->scalingFactor;
+        uint32_t ry = cy * cl->scalingFactor;
+#if 0
+        uint32_t rh = ch * cl->scalingFactor;
+        uint32_t rw = cw * cl->scalingFactor;
+#endif
 
         /* Copy and scale data from screen buffer to scaling buffer */
         srcptr = (unsigned char*)cl->screenBuffer + (ry * rfbScreen.paddedWidthInBytes ) + (rx * bytesPerPixel);

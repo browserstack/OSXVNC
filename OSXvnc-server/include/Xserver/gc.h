@@ -28,13 +28,13 @@ Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
                         All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its 
-documentation for any purpose and without fee is hereby granted, 
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in 
+both that copyright notice and this permission notice appear in
 supporting documentation, and that the name of Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.  
+software without specific, written prior permission.
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -48,7 +48,7 @@ SOFTWARE.
 /* $XConsortium: gc.h /main/16 1996/08/01 19:18:17 dpw $ */
 
 #ifndef GC_H
-#define GC_H 
+#define GC_H
 
 #include "misc.h"	/* for Bool */
 #include "X11/X.h"	/* for GContext, Mask */
@@ -87,27 +87,21 @@ typedef struct _GC    *GCPtr;
 typedef struct _GCOps *GCOpsPtr;
 
 extern void ValidateGC(
-#if NeedFunctionPrototypes
     DrawablePtr /*pDraw*/,
     GCPtr /*pGC*/
-#endif
 );
 
 extern int ChangeGC(
-#if NeedFunctionPrototypes
     GCPtr/*pGC*/,
     BITS32 /*mask*/,
     XID* /*pval*/
-#endif
 );
 
 extern int DoChangeGC(
-#if NeedFunctionPrototypes
     GCPtr/*pGC*/,
     BITS32 /*mask*/,
     XID* /*pval*/,
     int /*fPointer*/
-#endif
 );
 
 typedef union {
@@ -116,117 +110,87 @@ typedef union {
 } ChangeGCVal, *ChangeGCValPtr;
 
 extern int dixChangeGC(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/,
     GCPtr /*pGC*/,
     BITS32 /*mask*/,
     CARD32 * /*pval*/,
     ChangeGCValPtr /*pCGCV*/
-#endif
 );
 
 extern GCPtr CreateGC(
-#if NeedFunctionPrototypes
     DrawablePtr /*pDrawable*/,
     BITS32 /*mask*/,
     XID* /*pval*/,
     int* /*pStatus*/
-#endif
 );
 
 extern int CopyGC(
-#if NeedFunctionPrototypes
     GCPtr/*pgcSrc*/,
     GCPtr/*pgcDst*/,
     BITS32 /*mask*/
-#endif
 );
 
 extern int FreeGC(
-#if NeedFunctionPrototypes
     pointer /*pGC*/,
     XID /*gid*/
-#endif
 );
 
 extern void SetGCMask(
-#if NeedFunctionPrototypes
     GCPtr /*pGC*/,
     Mask /*selectMask*/,
     Mask /*newDataMask*/
-#endif
 );
 
 extern GCPtr CreateScratchGC(
-#if NeedFunctionPrototypes
     ScreenPtr /*pScreen*/,
     unsigned /*depth*/
-#endif
 );
 
 extern void FreeGCperDepth(
-#if NeedFunctionPrototypes
     int /*screenNum*/
-#endif
 );
 
 extern Bool CreateGCperDepth(
-#if NeedFunctionPrototypes
     int /*screenNum*/
-#endif
 );
 
 extern Bool CreateDefaultStipple(
-#if NeedFunctionPrototypes
     int /*screenNum*/
-#endif
 );
 
 extern void FreeDefaultStipple(
-#if NeedFunctionPrototypes
     int /*screenNum*/
-#endif
 );
 
 extern int SetDashes(
-#if NeedFunctionPrototypes
     GCPtr /*pGC*/,
     unsigned /*offset*/,
     unsigned /*ndash*/,
     unsigned char* /*pdash*/
-#endif
 );
 
 extern int VerifyRectOrder(
-#if NeedFunctionPrototypes
     int /*nrects*/,
     xRectangle* /*prects*/,
     int /*ordering*/
-#endif
 );
 
 extern int SetClipRects(
-#if NeedFunctionPrototypes
     GCPtr /*pGC*/,
     int /*xOrigin*/,
     int /*yOrigin*/,
     int /*nrects*/,
     xRectangle* /*prects*/,
     int /*ordering*/
-#endif
 );
 
 extern GCPtr GetScratchGC(
-#if NeedFunctionPrototypes
     unsigned /*depth*/,
     ScreenPtr /*pScreen*/
-#endif
 );
 
 extern void FreeScratchGC(
-#if NeedFunctionPrototypes
     GCPtr /*pGC*/
-#endif
 );
 
 #endif /* GC_H */

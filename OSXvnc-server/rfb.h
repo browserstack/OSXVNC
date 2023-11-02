@@ -4,7 +4,7 @@
 
 /*
  *  OSXvnc Copyright (C) 2001  *  OSXvnc Copyright (C) 2002-2004 Redstone Software osxvnc@redstonesoftware.comGuirk <mcguirk@incompleteness.net>.
- *  Original Xvnc code Copyright (C) 1999 AT&T Laboratories Cambridge.  
+ *  Original Xvnc code Copyright (C) 1999 AT&T Laboratories Cambridge.
  *  All Rights Reserved.
  *
  *  This is free software; you can redistribute it and/or modify
@@ -42,14 +42,10 @@
 //#include "Keyboards.h"
 //#import <Carbon/Carbon.h>
 //#include <ApplicationServices/ApplicationServices.h>
-//#include "CoreGraphics/CGGeometry.h"
-#ifndef COREGRAPHICS_H_
-struct CGPoint {
-    float x;
-    float y;
-};
-typedef struct CGPoint CGPoint;
-#endif
+
+#include "CoreGraphics/CGGeometry.h"
+
+#include <IOKit/pwr_mgt/IOPMLib.h>
 
 #define MAX_ENCODINGS 17
 
@@ -184,7 +180,7 @@ typedef struct rfbClientRec {
      * larger than the raw data or if it exceeds zlibAfterBufSize then
      * raw encoding is used instead.
      */
-    
+
     int client_zlibBeforeBufSize;
     char *client_zlibBeforeBuf;
 
@@ -200,7 +196,7 @@ typedef struct rfbClientRec {
 #define zlibAfterBufSize  cl->client_zlibAfterBufSize
 #define zlibAfterBuf      cl->client_zlibAfterBuf
 #define zlibAfterBufLen   cl->client_zlibAfterBufLen
-    
+
     /* tight encoding -- preserve zlib streams' state for each client */
 
     z_stream zsStruct[4];
@@ -218,12 +214,12 @@ typedef struct rfbClientRec {
     Bool reverseConnection;
     Bool readyForSetColourMapEntries;
     Bool useCopyRect;
-    
+
     int preferredEncoding;
-    
+
     /* tight encoding -- This variable is set on every rfbSendRectEncodingTight() call. */
     Bool usePixelFormat24;
-    
+
     /* tight encoding -- Compression level stuff. */
 
     int compressLevel;
@@ -284,7 +280,7 @@ typedef struct rfbClientRec {
     Bool disableRemoteEvents;      // Ignore PB, Keyboard and Mouse events
     Bool swapMouseButtons23;       // How to interpret mouse buttons 2 & 3
     Bool immediateUpdate;          // To request that we get immediate updates (even 0 rects)
-	
+
 	Bool richClipboardSupport;     // Client has indicated they support rich clipboards
 	void *richClipboardChangeCounts; // Dictionary of local ChangeCount NSNumbers stored by PB Name
 
@@ -294,24 +290,24 @@ typedef struct rfbClientRec {
 	char *richClipboardType;
 	void *richClipboardNSData;
 	int   richClipboardDataChangeCount;
-	
+
 	void *richClipboardReceivedName;
 	void *richClipboardReceivedType;
 	void *richClipboardReceivedNSData;
 	void *receivedFileTempFolder;
 	int   richClipboardReceivedChangeCount;
-	
-	
+
+
     int generalPBLastChange;      // Used to see if we need to send the latest general PB
-	
+
 	// Cursor Info
-	
+
     int currentCursorSeed;         // Used to see if we need to send a new cursor
     CGPoint clientCursorLocation;  // The last location the client left the mouse at
 
     BOOL needNewScreenSize;        // Flag to indicate we must send a new screen resolution
     BOOL modiferKeys[256];         // BOOL Array to record which keys THIS user has down, if they disconnect we will release those keys
-    
+
     /* REDSTONE - These (updateBuf, ublen) need to be in the CL, not global, for multiple clients */
 	screen_data_t * p_data;
 
@@ -323,25 +319,16 @@ typedef struct rfbClientRec {
 
 #define UPDATE_BUF_SIZE 30000
     char updateBuf[UPDATE_BUF_SIZE];
-    int ublen;
-    
+    uint32_t ublen;
+
     struct rfbClientRec *prev;
     struct rfbClientRec *next;
 } rfbClientRec, *rfbClientPtr;
 
 
 /*
- * This macro is used to test whether there is a framebuffer update needing to
- * be sent to the client.
- */
-
-#define FB_UPDATE_PENDING(cl)                           \
-     REGION_NOTEMPTY(&hackScreen,&(cl)->copyRegion) ||  \
-     REGION_NOTEMPTY(&hackScreen,&(cl)->modifiedRegion)
-
-/*
  * This macro creates an empty region (ie. a region with no areas) if it is
- * given a rectangle with a width or height of zero. It appears that 
+ * given a rectangle with a width or height of zero. It appears that
  * REGION_INTERSECT does not quite do the right thing with zero-width
  * rectangles, but it should with completely empty regions.
  */
@@ -382,18 +369,17 @@ typedef struct rfbClientRec {
 
 /* main.c */
 
-extern int rfbProtocolMajorVersion;
-extern int rfbProtocolMinorVersion;
+extern unsigned rfbProtocolMajorVersion;
+extern unsigned rfbProtocolMinorVersion;
 
-extern int rfbPort;
+extern unsigned rfbPort;
 
-extern char *rfbGetFramebuffer();
+extern char *rfbGetFramebuffer(void);
 extern void rfbGetFramebufferUpdateInRect(int x, int y, int w, int h);
 
 extern void rfbStartClientWithFD(int client_fd);
 extern void connectReverseClient(char *hostName, int portNum);
 
-extern ScreenRec hackScreen;
 extern rfbScreenInfo rfbScreen;
 
 extern char desktopName[256];
@@ -415,24 +401,24 @@ extern void rfbLog(char *format, ...);
 extern void rfbDebugLog(char *format, ...);
 extern void rfbLogPerror(char *str);
 
-extern void rfbShutdown();
+extern void rfbShutdown(void);
 
 /* sockets.c */
 
 extern int rfbMaxClientWait;
 
 extern void rfbCloseClient(rfbClientPtr cl);
-extern int ReadExact(rfbClientPtr cl, char *buf, int len);
-extern int WriteExact(rfbClientPtr cl, char *buf, int len);
+extern int ReadExact(rfbClientPtr cl, void *buf, size_t len);
+extern int WriteExact(rfbClientPtr cl, const void *buf, size_t len);
 
 /* cutpaste.c */
 
-extern void initPasteboard();
+extern void initPasteboard(void);
 extern void initPasteboardForClient(rfbClientPtr cl);
 extern void freePasteboardForClient(rfbClientPtr cl);
 
 extern void rfbSetCutText(rfbClientPtr cl, char *str, int len);
-extern void rfbCheckForPasteboardChange();
+extern void rfbCheckForPasteboardChange(void);
 extern void rfbClientUpdatePasteboard(rfbClientPtr cl);
 
 extern void rfbReceiveRichClipboardAvailable(rfbClientPtr cl);
@@ -469,7 +455,7 @@ extern void rfbClientListInit(void);
 extern rfbClientIteratorPtr rfbGetClientIterator(void);
 extern rfbClientPtr rfbClientIteratorNext(rfbClientIteratorPtr iterator);
 extern void rfbReleaseClientIterator(rfbClientIteratorPtr iterator);
-extern Bool rfbClientsConnected();
+extern Bool rfbClientsConnected(void);
 
 extern void rfbNewClientConnection(int sock);
 extern rfbClientPtr rfbNewClient(int sock);
@@ -482,10 +468,9 @@ extern void rfbProcessUDPInput(int sock);
 extern Bool rfbSendFramebufferUpdate(rfbClientPtr cl, RegionRec updateRegion);
 extern Bool rfbSendRectEncodingRaw(rfbClientPtr cl, int x,int y,int w,int h);
 extern Bool rfbSendUpdateBuf(rfbClientPtr cl);
-extern void rfbSendServerCutText(rfbClientPtr cl, char *str, int len);
+extern void rfbSendServerCutText(rfbClientPtr cl, char *str, size_t len);
 
 extern void setScaling (rfbClientPtr cl);
-extern void CopyScalingRect( rfbClientPtr cl, int* x, int* y, int* w, int* h, Bool bDoScaling );
 
 /* translate.c */
 
@@ -525,8 +510,8 @@ extern void PrintPixelFormat(rfbPixelFormat *pf);
 extern int httpPort;
 extern char *httpDir;
 
-extern void httpInitSockets();
-extern void httpCheckFds();
+extern void httpInitSockets(void);
+extern void httpCheckFds(void);
 
 
 
@@ -537,11 +522,12 @@ extern char *rfbAuthPasswdFile;
 extern Bool rfbAuthenticating;
 extern int rfbMaxLoginAttempts;
 
-extern void rfbAuthInit();
+extern void rfbAuthInit(void);
 extern void rfbAuthNewClient(rfbClientPtr cl);
 extern void rfbProcessAuthVersion(rfbClientPtr cl);
 extern void rfbAuthProcessClientMessage(rfbClientPtr cl);
 
+extern bool enterSuppliedPassword(char *passIn);
 
 /* rre.c */
 
@@ -618,6 +604,7 @@ extern void rfbPrintStats(rfbClientPtr cl);
 
 extern Bool rfbNoDimming;
 extern Bool rfbNoSleep;
+extern IOPMAssertionID userActivityLastAssertionId;
 
 extern int rfbDimmingInit(void);
 extern int rfbUndim(void);
@@ -625,8 +612,8 @@ extern int rfbDimmingShutdown(void);
 
 /* mousecursor.c */
 
-extern void GetCursorInfo();
-extern void rfbCheckForCursorChange();
+extern void GetCursorInfo(void);
+extern void rfbCheckForCursorChange(void);
 extern Bool rfbShouldSendNewCursor(rfbClientPtr cl);
 extern Bool rfbShouldSendNewPosition(rfbClientPtr cl);
 
@@ -635,20 +622,7 @@ extern Bool rfbSendCursorPos(rfbClientPtr cl);
 
 /* screencapture.c */
 
-screen_data_t *screen_InitCapture ();
+screen_data_t *screen_InitCapture(void);
 extern char *screen_Capture (screen_data_t *p_data);
 extern void screen_CloseCapture (screen_data_t *p_data);
 
-/* BrowserStack */
-extern Bool BSkeyPressed;
-extern long BSDataSize;
-extern int BSnumberOfJpegRectangles;
-extern int BSnumberOfSingleRect;
-
-extern double BSJpegProcessTime;
-extern double BSCompressionTime;
-extern double BSSendDataTime;
-extern double BSSendRectTime;
-
-extern double BSkeyPressTime;
-extern double getMStime();

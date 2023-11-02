@@ -34,17 +34,11 @@ static void desfunc(unsigned long *, unsigned long *);
 static void cookey(unsigned long *);
 
 static unsigned long KnL[32] = { 0L };
-static unsigned long KnR[32] = { 0L };
-static unsigned long Kn3[32] = { 0L };
-static unsigned char Df_Key[24] = {
-	0x01,0x23,0x45,0x67,0x89,0xab,0xcd,0xef,
-	0xfe,0xdc,0xba,0x98,0x76,0x54,0x32,0x10,
-	0x89,0xab,0xcd,0xef,0x01,0x23,0x45,0x67 };
 
-static unsigned short bytebit[8]	= {
+static const unsigned short bytebit[8]	= {
 	01, 02, 04, 010, 020, 040, 0100, 0200 };
 
-static unsigned long bigbyte[24] = {
+static const unsigned long bigbyte[24] = {
 	0x800000L,	0x400000L,	0x200000L,	0x100000L,
 	0x80000L,	0x40000L,	0x20000L,	0x10000L,
 	0x8000L,	0x4000L,	0x2000L,	0x1000L,
@@ -54,30 +48,23 @@ static unsigned long bigbyte[24] = {
 
 /* Use the key schedule specified in the Standard (ANSI X3.92-1981). */
 
-static unsigned char pc1[56] = {
+static const unsigned char pc1[56] = {
 	56, 48, 40, 32, 24, 16,  8,	 0, 57, 49, 41, 33, 25, 17,
 	 9,  1, 58, 50, 42, 34, 26,	18, 10,  2, 59, 51, 43, 35,
 	62, 54, 46, 38, 30, 22, 14,	 6, 61, 53, 45, 37, 29, 21,
 	13,  5, 60, 52, 44, 36, 28,	20, 12,  4, 27, 19, 11,  3 };
 
-static unsigned char totrot[16] = {
+static const unsigned char totrot[16] = {
 	1,2,4,6,8,10,12,14,15,17,19,21,23,25,27,28 };
 
-static unsigned char pc2[48] = {
+static const unsigned char pc2[48] = {
 	13, 16, 10, 23,  0,  4,  2, 27, 14,  5, 20,  9,
 	22, 18, 11,  3, 25,  7, 15,  6, 26, 19, 12,  1,
 	40, 51, 30, 36, 46, 54, 29, 39, 50, 44, 32, 47,
 	43, 48, 38, 55, 33, 52, 45, 41, 49, 35, 28, 31 };
 
-void preventWarningAboutUnusedVariables() {
-	if (KnR || Kn3 || Df_Key) {
-        return;
-    }
-}
-
-void deskey(key, edf)	/* Thanks to James Gillogly & Phil Karn! */
-unsigned char *key;
-int edf;
+void deskey(unsigned char *key, int edf)
+/* Thanks to James Gillogly & Phil Karn! */
 {
 	register int i, j, l, m, n;
 	unsigned char pc1m[56], pcr[56];
@@ -112,8 +99,7 @@ int edf;
 	return;
 	}
 
-static void cookey(raw1)
-register unsigned long *raw1;
+static void cookey(unsigned long *raw1)
 {
 	register unsigned long *cook, *raw0;
 	unsigned long dough[32];
@@ -135,40 +121,35 @@ register unsigned long *raw1;
 	return;
 	}
 
-void cpkey(into)
-register unsigned long *into;
+void cpkey(unsigned long *into)
 {
-	register unsigned long *from, *endp;
+    unsigned long *from = KnL;
+    unsigned long *endp = &KnL[32];
+    while (from < endp) {
+        *into++ = *from++;
+    }
+}
 
-	from = KnL, endp = &KnL[32];
-	while( from < endp ) *into++ = *from++;
-	return;
-	}
-
-void usekey(from)
-register unsigned long *from;
+void usekey(unsigned long *from)
 {
-	register unsigned long *to, *endp;
+    unsigned long *to = KnL;
+    unsigned long *endp = &KnL[32];
 
-	to = KnL, endp = &KnL[32];
-	while( to < endp ) *to++ = *from++;
-	return;
-	}
+    while (to < endp) {
+        *to++ = *from++;
+    }
+}
 
-void des(inblock, outblock)
-unsigned char *inblock, *outblock;
+void des(unsigned char *inblock, unsigned char *outblock)
 {
 	unsigned long work[2];
 
 	scrunch(inblock, work);
 	desfunc(work, KnL);
 	unscrun(work, outblock);
-	return;
-	}
+}
 
-static void scrunch(outof, into)
-register unsigned char *outof;
-register unsigned long *into;
+static void scrunch(unsigned char *outof, unsigned long *into)
 {
 	*into	 = (*outof++ & 0xffL) << 24;
 	*into	|= (*outof++ & 0xffL) << 16;
@@ -181,9 +162,7 @@ register unsigned long *into;
 	return;
 	}
 
-static void unscrun(outof, into)
-register unsigned long *outof;
-register unsigned char *into;
+static void unscrun(unsigned long *outof, unsigned char *into)
 {
 	*into++ = (*outof >> 24) & 0xffL;
 	*into++ = (*outof >> 16) & 0xffL;
@@ -340,8 +319,7 @@ static unsigned long SP8[64] = {
 	0x10041040L, 0x00041000L, 0x00041000L, 0x00001040L,
 	0x00001040L, 0x00040040L, 0x10000000L, 0x10041000L };
 
-static void desfunc(block, keys)
-register unsigned long *block, *keys;
+static void desfunc(unsigned long *block, unsigned long *keys)
 {
 	register unsigned long fval, work, right, leftt;
 	register int round;

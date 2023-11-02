@@ -20,7 +20,7 @@
 
 /*
  *  OSXvnc Copyright (C) 2001 Dan McGuirk <mcguirk@incompleteness.net>.
- *  Original Xvnc code Copyright (C) 1999 AT&T Laboratories Cambridge.  
+ *  Original Xvnc code Copyright (C) 1999 AT&T Laboratories Cambridge.
  *  All Rights Reserved.
  *
  *  This is free software; you can redistribute it and/or modify
@@ -59,8 +59,7 @@ int rfbMaxClientWait = 20000;   /* time (ms) after which we decide client has
 
 
 void
-rfbCloseClient(cl)
-     rfbClientPtr cl;
+rfbCloseClient(rfbClientPtr cl)
 {
     close(cl->sock);
     cl->sock = -1;
@@ -74,18 +73,15 @@ rfbCloseClient(cl)
  */
 
 int
-ReadExact(cl, buf, len)
-     rfbClientPtr cl;
-     char *buf;
-     int len;
+ReadExact(rfbClientPtr cl, void *data, size_t len)
 {
+    char *buf = data;
     int sock = cl->sock;
-    int n;
     fd_set fds;
     struct timeval tv;
 
     while (len > 0) {
-        n = read(sock, buf, len);
+        ssize_t n = read(sock, buf, len);
 
         if (n > 0) {
 
@@ -98,7 +94,7 @@ ReadExact(cl, buf, len)
 
         } else {
             if (errno != EWOULDBLOCK && errno != EAGAIN) {
-                return n;
+                return -1;
             }
 
             FD_ZERO(&fds);
@@ -108,7 +104,7 @@ ReadExact(cl, buf, len)
             n = select(sock+1, &fds, NULL, NULL, &tv);
             if (n < 0) {
                 rfbLogPerror("ReadExact: select");
-                return n;
+                return -1;
             }
             if (n == 0) {
                 errno = ETIMEDOUT;
@@ -128,13 +124,10 @@ ReadExact(cl, buf, len)
  */
 
 int
-WriteExact(cl, buf, len)
-     rfbClientPtr cl;
-     char *buf;
-     int len;
+WriteExact(rfbClientPtr cl, const void *data, size_t len)
 {
+    const char *buf = data;
     int sock = cl->sock;
-    int n;
     fd_set fds;
     struct timeval tv;
     int totalTimeWaited = 0;
@@ -142,7 +135,7 @@ WriteExact(cl, buf, len)
 
 	//    pthread_mutex_lock(&cl->outputMutex);
     while (len > 0) {
-        n = write(sock, buf, len);
+        ssize_t n = write(sock, buf, len);
 
         if (n > 0) {
 
@@ -151,13 +144,13 @@ WriteExact(cl, buf, len)
 
         } else if (n == 0) {
 
-            rfbLog("WriteExact: write returned 0?\n");
+            rfbLog("WriteExact: write returned 0?");
             exit(1);
 
         } else {
             if (errno != EWOULDBLOCK && errno != EAGAIN) {
                 //pthread_mutex_unlock(&cl->outputMutex);
-                return n;
+                return -1;
             }
 
             /* Retry every 5 seconds until we exceed rfbMaxClientWait.  We
@@ -172,7 +165,7 @@ WriteExact(cl, buf, len)
             if (n < 0) {
                 rfbLogPerror("WriteExact: select");
                 //pthread_mutex_unlock(&cl->outputMutex);
-                return n;
+                return -1;
             }
             if (n == 0) {
                 totalTimeWaited += 5000;

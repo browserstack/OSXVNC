@@ -11,6 +11,7 @@
 
 Bool rfbNoDimming = FALSE;
 Bool rfbNoSleep   = TRUE;
+IOPMAssertionID userActivityLastAssertionId;
 
 static pthread_mutex_t  dimming_mutex;
 static unsigned long    dim_time;
@@ -25,16 +26,18 @@ static Bool sleep_time_saved       = FALSE;
 void rfbScreensaverTimer(EventLoopTimerRef timer, void *userData)
 {
 #pragma unused (timer, userData)
-    if (rfbNoSleep && rfbClientsConnected())
+    if (rfbNoSleep && rfbClientsConnected()) {
         UpdateSystemActivity(IdleActivity);
+        // UpdateSystemActivity's seeming replacement:
+        IOPMAssertionDeclareUserActivity(CFSTR("VNC user is logged in"), kIOPMUserActiveLocal, &userActivityLastAssertionId);
+    }
 }
-
 
 static int
 saveDimSettings(void)
 {
-    if (IOPMGetAggressiveness(power_mgt, 
-                              kPMMinutesToDim, 
+    if (IOPMGetAggressiveness(power_mgt,
+                              kPMMinutesToDim,
                               &dim_time) != kIOReturnSuccess)
         return -1;
 
@@ -48,8 +51,8 @@ restoreDimSettings(void)
     if (!dim_time_saved)
         return -1;
 
-    if (IOPMSetAggressiveness(power_mgt, 
-                              kPMMinutesToDim, 
+    if (IOPMSetAggressiveness(power_mgt,
+                              kPMMinutesToDim,
                               dim_time) != kIOReturnSuccess)
         return -1;
 
@@ -61,8 +64,8 @@ restoreDimSettings(void)
 static int
 saveSleepSettings(void)
 {
-    if (IOPMGetAggressiveness(power_mgt, 
-                              kPMMinutesToSleep, 
+    if (IOPMGetAggressiveness(power_mgt,
+                              kPMMinutesToSleep,
                               &sleep_time) != kIOReturnSuccess)
         return -1;
 
@@ -76,8 +79,8 @@ restoreSleepSettings(void)
     if (!sleep_time_saved)
         return -1;
 
-    if (IOPMSetAggressiveness(power_mgt, 
-                              kPMMinutesToSleep, 
+    if (IOPMSetAggressiveness(power_mgt,
+                              kPMMinutesToSleep,
                               sleep_time) != kIOReturnSuccess)
         return -1;
 
@@ -101,7 +104,7 @@ rfbDimmingInit(void)
     if (rfbNoDimming) {
         if (saveDimSettings() < 0)
             return -1;
-        if (IOPMSetAggressiveness(power_mgt, 
+        if (IOPMSetAggressiveness(power_mgt,
                                   kPMMinutesToDim, 0) != kIOReturnSuccess)
             return -1;
     }
@@ -109,7 +112,7 @@ rfbDimmingInit(void)
     if (rfbNoSleep) {
         if (saveSleepSettings() < 0)
             return -1;
-        if (IOPMSetAggressiveness(power_mgt, 
+        if (IOPMSetAggressiveness(power_mgt,
                                   kPMMinutesToSleep, 0) != kIOReturnSuccess)
             return -1;
     }
@@ -125,7 +128,7 @@ rfbUndim(void)
     int result = -1;
 
     pthread_mutex_lock(&dimming_mutex);
-    
+
     if (!initialized)
         goto DONE;
 
@@ -137,7 +140,7 @@ rfbUndim(void)
         if (restoreDimSettings() < 0)
             goto DONE;
     }
-    
+
     if (!rfbNoSleep) {
         if (saveSleepSettings() < 0)
             goto DONE;

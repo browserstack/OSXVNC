@@ -28,13 +28,13 @@ Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
                         All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its 
-documentation for any purpose and without fee is hereby granted, 
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in 
+both that copyright notice and this permission notice appear in
 supporting documentation, and that the name of Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.  
+software without specific, written prior permission.
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -47,6 +47,27 @@ SOFTWARE.
 ******************************************************************/
 #ifndef XMD_H
 #define XMD_H 1
+
+#if 1
+#include <stdint.h>
+#define B16 :16
+#define B32 :32
+typedef int8_t INT8;
+typedef int16_t INT16;
+typedef int32_t INT32;
+#if !defined(OBJC_BOOL_IS_BOOL)
+typedef int8_t BOOL;
+#endif
+#ifndef __EMX__
+#endif
+typedef uint32_t BITS32;
+typedef uint8_t BYTE;
+typedef uint8_t CARD8;
+typedef uint16_t CARD16;
+typedef uint32_t CARD32;
+typedef uint64_t CARD64;
+#else
+
 /* $XConsortium: Xmd.h,v 1.49 95/06/08 23:20:39 gildea Exp $ */
 /* $XFree86: xc/include/Xmd.h,v 3.4 1996/12/31 04:15:20 dawes Exp $ */
 /*
@@ -81,7 +102,7 @@ SOFTWARE.
  * Definition of macro used to set constants for size of network structures;
  * machines with preprocessors that can't handle all of the sz_ symbols
  * can define this macro to be sizeof(x) if and only if their compiler doesn't
- * pad out structures (esp. the xTextElt structure which contains only two 
+ * pad out structures (esp. the xTextElt structure which contains only two
  * one-byte fields).  Network structures should always define sz_symbols.
  *
  * The sz_ prefix is used instead of something more descriptive so that the
@@ -202,10 +223,12 @@ typedef CARD8           BOOL;
 #define NEXTPTR(p,t)  (((char *) p) + SIZEOF(t))
 #else /* else not MUSTCOPY, this is used for 32-bit machines */
 /*
- * this version should leave result of type (t *), but that should only be 
+ * this version should leave result of type (t *), but that should only be
  * used when not in MUSTCOPY
- */  
+ */
 #define NEXTPTR(p,t) (((t *)(p)) + 1)
 #endif /* MUSTCOPY - used machines whose C structs don't line up with proto */
+
+#endif /* 0 */
 
 #endif /* XMD_H */

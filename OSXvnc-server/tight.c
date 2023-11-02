@@ -171,9 +171,7 @@ static void JpegSetDstManager(rfbClientPtr cl, j_compress_ptr cinfo);
  */
 
 int
-rfbNumCodedRectsTight(cl, x, y, w, h)
-    rfbClientPtr cl;
-    int x, y, w, h;
+rfbNumCodedRectsTight(rfbClientPtr cl, int x, int y, int w, int h)
 {
     int maxRectSize, maxRectWidth;
     int subrectMaxWidth, subrectMaxHeight;
@@ -197,9 +195,7 @@ rfbNumCodedRectsTight(cl, x, y, w, h)
 }
 
 Bool
-rfbSendRectEncodingTight(cl, x, y, w, h)
-    rfbClientPtr cl;
-    int x, y, w, h;
+rfbSendRectEncodingTight(rfbClientPtr cl, int x, int y, int w, int h)
 {
     int nMaxRows;
     CARD32 colorValue;
@@ -335,11 +331,7 @@ rfbSendRectEncodingTight(cl, x, y, w, h)
 }
 
 static void
-FindBestSolidArea(cl, x, y, w, h, colorValue, w_ptr, h_ptr)
-    rfbClientPtr cl;
-    int x, y, w, h;
-    CARD32 colorValue;
-    int *w_ptr, *h_ptr;
+FindBestSolidArea(rfbClientPtr cl, int x, int y, int w, int h, CARD32 colorValue, int *w_ptr, int *h_ptr)
 {
     int dx, dy, dw, dh;
     int w_prev;
@@ -377,11 +369,8 @@ FindBestSolidArea(cl, x, y, w, h, colorValue, w_ptr, h_ptr)
 }
 
 static void
-ExtendSolidArea(cl, x, y, w, h, colorValue, x_ptr, y_ptr, w_ptr, h_ptr)
-rfbClientPtr cl;
-    int x, y, w, h;
-    CARD32 colorValue;
-    int *x_ptr, *y_ptr, *w_ptr, *h_ptr;
+ExtendSolidArea(rfbClientPtr cl, int x, int y, int w, int h,
+                CARD32 colorValue, int *x_ptr, int *y_ptr, int *w_ptr, int *h_ptr)
 {
     int cx, cy;
 
@@ -415,11 +404,7 @@ rfbClientPtr cl;
 }
 
 static Bool
-CheckSolidTile(cl, x, y, w, h, colorPtr, needSameColor)
-    rfbClientPtr cl;
-	int x, y, w, h;
-    CARD32 *colorPtr;
-    Bool needSameColor;
+CheckSolidTile(rfbClientPtr cl, int x, int y, int w, int h, CARD32 *colorPtr, Bool needSameColor)
 {
     switch(rfbServerFormat.bitsPerPixel) {
     case 32:
@@ -434,11 +419,7 @@ CheckSolidTile(cl, x, y, w, h, colorPtr, needSameColor)
 #define DEFINE_CHECK_SOLID_FUNCTION(bpp)                                      \
                                                                               \
 static Bool                                                                   \
-CheckSolidTile##bpp(cl, x, y, w, h, colorPtr, needSameColor)                      \
-    rfbClientPtr cl; \
-    int x, y;                                                                 \
-    CARD32 *colorPtr;                                                         \
-    Bool needSameColor;                                                       \
+CheckSolidTile##bpp(rfbClientPtr cl, int x, int y, int w, int h, CARD32 *colorPtr, Bool needSameColor) \
 {                                                                             \
     CARD##bpp *fbptr;                                                         \
     CARD##bpp colorValue;                                                     \
@@ -468,13 +449,8 @@ DEFINE_CHECK_SOLID_FUNCTION(16)
 DEFINE_CHECK_SOLID_FUNCTION(32)
 
 static Bool
-SendRectSimple(cl, x, y, w, h)
-    rfbClientPtr cl;
-    int x, y, w, h;
+SendRectSimple(rfbClientPtr cl, int x, int y, int w, int h)
 {
-    // rfbLog("SendRectSimple : %d", w*h);
-    BSnumberOfSingleRect++;
-    double timenow = getMStime();
     int maxBeforeSize, maxAfterSize;
     int maxRectSize, maxRectWidth;
     int subrectMaxWidth, subrectMaxHeight;
@@ -521,17 +497,13 @@ SendRectSimple(cl, x, y, w, h)
         if (!SendSubrect(cl, x, y, w, h))
             return FALSE;
     }
-    BSSendRectTime += (getMStime()*1000 - timenow*1000);
 
     return TRUE;
 }
 
 static Bool
-SendSubrect(cl, x, y, w, h)
-    rfbClientPtr cl;
-    int x, y, w, h;
+SendSubrect(rfbClientPtr cl, int x, int y, int w, int h)
 {
-    //rfbLog("SendSubrect : %d", w*h);
     char *fbptr;
     Bool success = FALSE;
 
@@ -604,9 +576,7 @@ SendSubrect(cl, x, y, w, h)
 }
 
 static Bool
-SendTightHeader(cl, x, y, w, h)
-    rfbClientPtr cl;
-    int x, y, w, h;
+SendTightHeader(rfbClientPtr cl, int x, int y, int w, int h)
 {
     rfbFramebufferUpdateRectHeader rect;
 
@@ -621,8 +591,7 @@ SendTightHeader(cl, x, y, w, h)
     rect.r.h = Swap16IfLE(h);
     rect.encoding = Swap32IfLE(rfbEncodingTight);
 
-    memcpy(&cl->updateBuf[cl->ublen], (char *)&rect,
-           sz_rfbFramebufferUpdateRectHeader);
+    memcpy(&cl->updateBuf[cl->ublen], &rect, sz_rfbFramebufferUpdateRectHeader);
     cl->ublen += sz_rfbFramebufferUpdateRectHeader;
 
     cl->rfbRectanglesSent[rfbEncodingTight]++;
@@ -636,8 +605,7 @@ SendTightHeader(cl, x, y, w, h)
  */
 
 static Bool
-SendSolidRect(cl)
-    rfbClientPtr cl;
+SendSolidRect(rfbClientPtr cl)
 {
     int len;
 
@@ -662,9 +630,7 @@ SendSolidRect(cl)
 }
 
 static Bool
-SendMonoRect(cl, w, h)
-    rfbClientPtr cl;
-    int w, h;
+SendMonoRect(rfbClientPtr cl, int w, int h)
 {
     int streamId = 1;
     int paletteLen, dataLen;
@@ -727,9 +693,7 @@ SendMonoRect(cl, w, h)
 }
 
 static Bool
-SendIndexedRect(cl, w, h)
-    rfbClientPtr cl;
-    int w, h;
+SendIndexedRect(rfbClientPtr cl, int w, int h)
 {
     int streamId = 2;
     int i, entryLen;
@@ -783,16 +747,13 @@ SendIndexedRect(cl, w, h)
         return FALSE;           /* Should never happen. */
     }
 
-    Bool cd = CompressData(cl, streamId, w * h,
+    return CompressData(cl, streamId, w * h,
                         tightConf[compressLevel].idxZlibLevel,
                         Z_DEFAULT_STRATEGY);
-    return cd;
 }
 
 static Bool
-SendFullColorRect(cl, w, h)
-    rfbClientPtr cl;
-    int w, h;
+SendFullColorRect(rfbClientPtr cl, int w, int h)
 {
     int streamId = 0;
     int len;
@@ -817,9 +778,7 @@ SendFullColorRect(cl, w, h)
 }
 
 static Bool
-SendGradientRect(cl, w, h)
-    rfbClientPtr cl;
-    int w, h;
+SendGradientRect(rfbClientPtr cl, int w, int h)
 {
     int streamId = 3;
     int len;
@@ -856,12 +815,9 @@ SendGradientRect(cl, w, h)
 }
 
 static Bool
-CompressData(cl, streamId, dataLen, zlibLevel, zlibStrategy)
-    rfbClientPtr cl;
-    int streamId, dataLen, zlibLevel, zlibStrategy;
+CompressData(rfbClientPtr cl, int streamId, int dataLen, int zlibLevel, int zlibStrategy)
 {
     z_streamp pz;
-    double t = getMStime();
     int err;
 
     if (dataLen < TIGHT_MIN_TO_COMPRESS) {
@@ -908,14 +864,10 @@ CompressData(cl, streamId, dataLen, zlibLevel, zlibStrategy)
         return FALSE;
     }
 
-    Bool d = SendCompressedData(cl, tightAfterBufSize - pz->avail_out);
-    BSCompressionTime += (getMStime()*1000 - t*1000);
-    return d;
+    return SendCompressedData(cl, tightAfterBufSize - pz->avail_out);
 }
 
-static Bool SendCompressedData(cl, compressedLen)
-    rfbClientPtr cl;
-    int compressedLen;
+static Bool SendCompressedData(rfbClientPtr cl, int compressedLen)
 {
     int i, portionLen;
 
@@ -954,9 +906,7 @@ static Bool SendCompressedData(cl, compressedLen)
 
 #undef FillPalette8
 static void
-FillPalette8(cl, count)
-    rfbClientPtr cl;
-    int count;
+FillPalette8(rfbClientPtr cl, int count)
 {
     CARD8 *data = (CARD8 *)tightBeforeBuf;
     CARD8 c0, c1;
@@ -1003,9 +953,7 @@ FillPalette8(cl, count)
 #define DEFINE_FILL_PALETTE_FUNCTION(bpp)                               \
                                                                         \
 static void                                                             \
-FillPalette##bpp(cl, count)                                                 \
-    rfbClientPtr cl;                                                    \
-    int count;                                                          \
+FillPalette##bpp(rfbClientPtr cl, int count)                            \
 {                                                                       \
     CARD##bpp *data = (CARD##bpp *)tightBeforeBuf;                      \
     CARD##bpp c0, c1, ci = 0;                                           \
@@ -1089,11 +1037,7 @@ PaletteReset(rfbClientPtr cl)
 
 #undef PaletteInsert
 static int
-PaletteInsert(cl, rgb, numPixels, bpp)
-    rfbClientPtr cl;
-    CARD32 rgb;
-    int numPixels;
-    int bpp;
+PaletteInsert(rfbClientPtr cl, CARD32 rgb, int numPixels, int bpp)
 {
     COLOR_LIST *pnode;
     COLOR_LIST *prev_pnode = NULL;
@@ -1163,10 +1107,7 @@ PaletteInsert(cl, rgb, numPixels, bpp)
  * Color components assumed to be byte-aligned.
  */
 
-static void Pack24(buf, fmt, count)
-    char *buf;
-    rfbPixelFormat *fmt;
-    int count;
+static void Pack24(char *buf, rfbPixelFormat *fmt, int count)
 {
     CARD32 *buf32;
     CARD32 pix;
@@ -1202,10 +1143,7 @@ static void Pack24(buf, fmt, count)
 #define DEFINE_IDX_ENCODE_FUNCTION(bpp)                                 \
                                                                         \
 static void                                                             \
-EncodeIndexedRect##bpp(cl, buf, count)                                      \
-    rfbClientPtr cl;                                                    \
-    CARD8 *buf;                                                         \
-    int count;                                                          \
+EncodeIndexedRect##bpp(rfbClientPtr cl, CARD8 *buf, int count)          \
 {                                                                       \
     COLOR_LIST *pnode;                                                  \
     CARD##bpp *src;                                                     \
@@ -1245,10 +1183,7 @@ DEFINE_IDX_ENCODE_FUNCTION(32)
 #define DEFINE_MONO_ENCODE_FUNCTION(bpp)                                \
                                                                         \
 static void                                                             \
-EncodeMonoRect##bpp(cl, buf, w, h)                                          \
-    rfbClientPtr cl;                                                    \
-    CARD8 *buf;                                                         \
-    int w, h;                                                           \
+EncodeMonoRect##bpp(rfbClientPtr cl, CARD8 *buf, int w, int h)          \
 {                                                                       \
     CARD##bpp *ptr;                                                     \
     CARD##bpp bg;                                                       \
@@ -1312,11 +1247,7 @@ DEFINE_MONO_ENCODE_FUNCTION(32)
 
 #undef FilterGradient24
 static void
-FilterGradient24(cl, buf, fmt, w, h)
-    rfbClientPtr cl;
-    char *buf;
-    rfbPixelFormat *fmt;
-    int w, h;
+FilterGradient24(rfbClientPtr cl, char *buf, rfbPixelFormat *fmt, int w, int h)
 {
     CARD32 *buf32;
     CARD32 pix32;
@@ -1377,11 +1308,7 @@ FilterGradient24(cl, buf, fmt, w, h)
 #define DEFINE_GRADIENT_FILTER_FUNCTION(bpp)                             \
                                                                          \
 static void                                                              \
-FilterGradient##bpp(cl, buf, fmt, w, h)                                      \
-    rfbClientPtr cl;                                                     \
-    CARD##bpp *buf;                                                      \
-    rfbPixelFormat *fmt;                                                 \
-    int w, h;                                                            \
+FilterGradient##bpp(rfbClientPtr cl, CARD##bpp *buf, rfbPixelFormat *fmt, int w, int h) \
 {                                                                        \
     CARD##bpp pix, diff;                                                 \
     Bool endianMismatch;                                                 \
@@ -1457,10 +1384,7 @@ DEFINE_GRADIENT_FILTER_FUNCTION(32)
 
 #undef DetectSmoothImage
 static int
-DetectSmoothImage (cl, fmt, w, h)
-    rfbClientPtr cl;
-    rfbPixelFormat *fmt;
-    int w, h;
+DetectSmoothImage (rfbClientPtr cl, rfbPixelFormat *fmt, int w, int h)
 {
     unsigned long avgError;
 
@@ -1502,13 +1426,10 @@ DetectSmoothImage (cl, fmt, w, h)
 
 #undef DetectSmoothImage24
 static unsigned long
-DetectSmoothImage24 (cl, fmt, w, h)
-    rfbClientPtr cl;
-    rfbPixelFormat *fmt;
-    int w, h;
+DetectSmoothImage24 (rfbClientPtr cl, rfbPixelFormat *fmt, int w, int h)
 {
     int off;
-    int x, y, d, dx, c;
+    int d, dx, c;
     int diffStat[256];
     int pixelCount = 0;
     int pix, left[3];
@@ -1520,7 +1441,8 @@ DetectSmoothImage24 (cl, fmt, w, h)
 
     memset(diffStat, 0, 256*sizeof(int));
 
-    y = 0, x = 0;
+    int x = 0;
+    int y = 0;
     while (y < h && x < w) {
         for (d = 0; d < h - y && d < w - x - DETECT_SUBROW_WIDTH; d++) {
             for (c = 0; c < 3; c++) {
@@ -1544,7 +1466,7 @@ DetectSmoothImage24 (cl, fmt, w, h)
         }
     }
 
-    if (diffStat[0] * 33 / pixelCount >= 95)
+    if (pixelCount == 0 || diffStat[0] * 33 / pixelCount >= 95)
         return 0;
 
     avgError = 0;
@@ -1567,10 +1489,7 @@ DetectSmoothImage24 (cl, fmt, w, h)
 #define DEFINE_DETECT_FUNCTION(bpp)                                          \
                                                                              \
 static unsigned long                                                         \
-DetectSmoothImage##bpp (cl, fmt, w, h)                                           \
-    rfbClientPtr cl;                                                         \
-    rfbPixelFormat *fmt;                                                     \
-    int w, h;                                                                \
+DetectSmoothImage##bpp (rfbClientPtr cl, rfbPixelFormat *fmt, int w, int h)  \
 {                                                                            \
     Bool endianMismatch;                                                     \
     CARD##bpp pix;                                                           \
@@ -1628,6 +1547,9 @@ DetectSmoothImage##bpp (cl, fmt, w, h)                                          
         }                                                                    \
     }                                                                        \
                                                                              \
+    if (pixelCount == 0)                                                     \
+        return 0;                                                            \
+                                                                             \
     if ((diffStat[0] + diffStat[1]) * 100 / pixelCount >= 90)                \
         return 0;                                                            \
                                                                              \
@@ -1656,14 +1578,8 @@ DEFINE_DETECT_FUNCTION(32)
  */
 
 static Bool
-SendJpegRect(cl, x, y, w, h, quality)
-    rfbClientPtr cl;
-    int x, y, w, h;
-    int quality;
+SendJpegRect(rfbClientPtr cl, int x, int y, int w, int h, int quality)
 {
-    // rfbLog("JpegRect : %d", w*h);
-    double cTime = getMStime();
-    BSnumberOfJpegRectangles++;
     struct jpeg_compress_struct cinfo;
     struct jpeg_error_mgr jerr;
     CARD8 *srcBuf;
@@ -1720,16 +1636,11 @@ SendJpegRect(cl, x, y, w, h, quality)
     cl->updateBuf[cl->ublen++] = (char)(rfbTightJpeg << 4);
     cl->rfbBytesSent[rfbEncodingTight]++;
 
-    Bool r = SendCompressedData(cl, jpegDstDataLen);
-    BSJpegProcessTime += (getMStime()*1000 - cTime*1000);
-    return r;
+    return SendCompressedData(cl, jpegDstDataLen);
 }
 
 static void
-PrepareRowForJpeg(cl, dst, x, y, count)
-rfbClientPtr cl;
-    CARD8 *dst;
-    int x, y, count;
+PrepareRowForJpeg(rfbClientPtr cl, CARD8 *dst, int x, int y, int count)
 {
     if (rfbServerFormat.bitsPerPixel == 32) {
         if ( rfbServerFormat.redMax == 0xFF &&
@@ -1746,10 +1657,7 @@ rfbClientPtr cl;
 }
 
 static void
-PrepareRowForJpeg24(cl, dst, x, y, count)
-    rfbClientPtr cl;
-    CARD8 *dst;
-    int x, y, count;
+PrepareRowForJpeg24(rfbClientPtr cl, CARD8 *dst, int x, int y, int count)
 {
     CARD32 *fbptr;
     CARD32 pix;
@@ -1768,10 +1676,7 @@ PrepareRowForJpeg24(cl, dst, x, y, count)
 #define DEFINE_JPEG_GET_ROW_FUNCTION(bpp)                                   \
                                                                             \
 static void                                                                 \
-PrepareRowForJpeg##bpp(cl, dst, x, y, count)                                    \
-rfbClientPtr cl; \
-CARD8 *dst;                                                             \
-    int x, y, count;                                                        \
+PrepareRowForJpeg##bpp(rfbClientPtr cl, CARD8 *dst, int x, int y, int count) \
 {                                                                           \
     CARD##bpp *fbptr;                                                       \
     CARD##bpp pix;                                                          \

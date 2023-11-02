@@ -26,9 +26,9 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <vncauth.h>
-#include <d3des.h>
 #include <time.h>
+#include "vncauth.h"
+#include "d3des.h"
 
 
 
@@ -47,14 +47,14 @@ char *vncEncryptPasswd(const char *passwd) {
 
 	// Handles copying 0's into extra space
 	strncpy((char *)encryptedPasswd, passwd, 8);
-	
+
     /* Do encryption in-place - this way we overwrite our copy of the plaintext password */
     deskey(fixedkey, EN0);
     des(encryptedPasswd, encryptedPasswd);
-	
+
 	returnPass = malloc(8);
 	strncpy(returnPass, (const char *) encryptedPasswd, 8);
-	
+
     return (char *)returnPass;
 }
 
@@ -93,7 +93,7 @@ vncEncryptAndStorePasswd(char *passwd, char *fname)
     for (i = 0; i < 8; i++) {
 	putc(encryptedPasswd[i], fp);
     }
-  
+
     fclose(fp);
     return 0;
 }
@@ -110,25 +110,29 @@ vncDecryptPasswdFromFile(char *fname)
 {
     FILE *fp;
     int i, ch;
-    unsigned char *passwd = (unsigned char *)malloc(9);
+    unsigned char *passwd;
 
     if ((fp = fopen(fname,"r")) == NULL) return NULL;
 
-    for (i = 0; i < 8; i++) {
-	ch = getc(fp);
-	if (ch == EOF) {
-	    fclose(fp);
-	    return NULL;
-	}
-	passwd[i] = ch;
+    passwd = (unsigned char *)malloc(9);
+    if (passwd != NULL) {
+        for (i = 0; i < 8; i++) {
+            ch = getc(fp);
+            if (ch == EOF) {
+                free(passwd);
+                fclose(fp);
+                return NULL;
+            }
+            passwd[i] = ch;
+        }
+
+        deskey(fixedkey, DE1);
+        des(passwd, passwd);
+
+        passwd[8] = 0;
     }
 
     fclose(fp);
-
-    deskey(fixedkey, DE1);
-    des(passwd, passwd);
-
-    passwd[8] = 0;
 
     return (char *)passwd;
 }
@@ -147,7 +151,7 @@ vncRandomBytes(unsigned char *bytes)
 
     srandom(seed);
     for (i = 0; i < CHALLENGESIZE; i++) {
-	bytes[i] = (unsigned char)(random() & 255);    
+	bytes[i] = (unsigned char)(random() & 255);
     }
 }
 

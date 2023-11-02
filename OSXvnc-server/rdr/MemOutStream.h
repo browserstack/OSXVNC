@@ -40,13 +40,13 @@ namespace rdr {
       delete [] start;
     }
 
-    void writeBytes(const void* data, int length) {
+    void writeBytes(const void* data, size_t length) {
       check(length);
       memcpy(ptr, data, length);
       ptr += length;
     }
 
-    int length() { return ptr - start; }
+    size_t length() { return ptr - start; }
     void clear() { ptr = start; };
     void reposition(int pos) { ptr = start + pos; }
 
@@ -59,8 +59,8 @@ namespace rdr {
     // overrun() either doubles the buffer or adds enough space for nItems of
     // size itemSize bytes.
 
-    int overrun(int itemSize, int nItems) {
-      int len = ptr - start + itemSize * nItems;
+    size_t overrun(size_t itemSize, size_t nItems) {
+      ssize_t len = ptr - start + itemSize * nItems;
       if (len < (end - start) * 2)
         len = (end - start) * 2;
 

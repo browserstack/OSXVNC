@@ -38,15 +38,11 @@
  *                              rectangle encoding.
  */
 
-Bool
-rfbSendOneRectEncodingZlib(cl, x, y, w, h)
-    rfbClientPtr cl;
-    int x, y, w, h;
+Bool rfbSendOneRectEncodingZlib(rfbClientPtr cl, int x, int y, int w, int h)
 {
     rfbFramebufferUpdateRectHeader rect;
     rfbZlibHeader hdr;
     int deflateResult;
-    int previousOut;
     int i;
     char *fbptr = (cl->scalingFrameBuffer + (cl->scalingPaddedWidthInBytes * y)
     	   + (x * (rfbScreen.bitsPerPixel / 8)));
@@ -105,7 +101,7 @@ rfbSendOneRectEncodingZlib(cl, x, y, w, h)
 	    zlibAfterBuf = (char *)xrealloc(zlibAfterBuf, zlibAfterBufSize);
     }
 
-    /* 
+    /*
      * Convert pixel data to client format.
      */
     (*cl->translateFn)(cl->translateLookupTable, &rfbServerFormat,
@@ -139,7 +135,7 @@ rfbSendOneRectEncodingZlib(cl, x, y, w, h)
 
     }
 
-    previousOut = cl->compStream.total_out;
+    size_t previousOut = cl->compStream.total_out;
 
     /* Perform the compression here. */
     deflateResult = deflate( &(cl->compStream), Z_SYNC_FLUSH );
@@ -148,7 +144,7 @@ rfbSendOneRectEncodingZlib(cl, x, y, w, h)
     zlibAfterBufLen = cl->compStream.total_out - previousOut;
 
     if ( deflateResult != Z_OK ) {
-        rfbLog("zlib deflation error: %s\n", cl->compStream.msg);
+        rfbLog("zlib deflation error: %s", cl->compStream.msg);
         return FALSE;
     }
 
@@ -177,13 +173,12 @@ rfbSendOneRectEncodingZlib(cl, x, y, w, h)
     rect.r.h = Swap16IfLE(h);
     rect.encoding = Swap32IfLE(rfbEncodingZlib);
 
-    memcpy(&cl->updateBuf[cl->ublen], (char *)&rect,
-	   sz_rfbFramebufferUpdateRectHeader);
+    memcpy(&cl->updateBuf[cl->ublen], &rect, sz_rfbFramebufferUpdateRectHeader);
     cl->ublen += sz_rfbFramebufferUpdateRectHeader;
 
     hdr.nBytes = Swap32IfLE(zlibAfterBufLen);
 
-    memcpy(&cl->updateBuf[cl->ublen], (char *)&hdr, sz_rfbZlibHeader);
+    memcpy(&cl->updateBuf[cl->ublen], &hdr, sz_rfbZlibHeader);
     cl->ublen += sz_rfbZlibHeader;
 
     for (i = 0; i < zlibAfterBufLen;) {
@@ -216,9 +211,7 @@ rfbSendOneRectEncodingZlib(cl, x, y, w, h)
  */
 
 Bool
-rfbSendRectEncodingZlib(cl, x, y, w, h)
-    rfbClientPtr cl;
-    int x, y, w, h;
+rfbSendRectEncodingZlib(rfbClientPtr cl, int x, int y, int w, int h)
 {
     int  maxLines;
     int  linesRemaining;
@@ -257,7 +250,7 @@ rfbSendRectEncodingZlib(cl, x, y, w, h)
             return FALSE;
         }
 
-        /* Technically, flushing the buffer here is not extrememly
+        /* Technically, flushing the buffer here is not extremely
          * efficient.  However, this improves the overall throughput
          * of the system over very slow networks.  By flushing
          * the buffer with every maximum size zlib rectangle, we

@@ -43,9 +43,7 @@ static Bool sendZlibHex32(rfbClientPtr cl, int x, int y, int w, int h);
  */
 
 Bool
-rfbSendRectEncodingZlibHex(cl, x, y, w, h)
-    rfbClientPtr cl;
-    int x, y, w, h;
+rfbSendRectEncodingZlibHex(rfbClientPtr cl, int x, int y, int w, int h)
 {
     rfbFramebufferUpdateRectHeader rect;
 
@@ -60,8 +58,7 @@ rfbSendRectEncodingZlibHex(cl, x, y, w, h)
     rect.r.h = Swap16IfLE(h);
     rect.encoding = Swap32IfLE(rfbEncodingZlibHex);
 
-    memcpy(&cl->updateBuf[cl->ublen], (char *)&rect,
-	   sz_rfbFramebufferUpdateRectHeader);
+    memcpy(&cl->updateBuf[cl->ublen], &rect, sz_rfbFramebufferUpdateRectHeader);
     cl->ublen += sz_rfbFramebufferUpdateRectHeader;
 
     cl->rfbRectanglesSent[rfbEncodingZlibHex]++;
@@ -76,7 +73,7 @@ rfbSendRectEncodingZlibHex(cl, x, y, w, h)
 	return sendZlibHex32(cl, x, y, w, h);
     }
 
-    rfbLog("rfbSendRectEncodingZlibHex: bpp %d?\n", cl->format.bitsPerPixel);
+    rfbLog("rfbSendRectEncodingZlibHex: bpp %d?", cl->format.bitsPerPixel);
     return FALSE;
 }
 
@@ -88,7 +85,6 @@ zlibCompress( BYTE *from_buf,
               rfbClientPtr cl,
               struct z_stream_s *compressor )
 {
-    int previousTotalOut;
     int deflateResult;
 
     /* Initialize input/output buffer assignment for compressor state. */
@@ -116,7 +112,7 @@ zlibCompress( BYTE *from_buf,
 				      Z_DEFAULT_STRATEGY );
         if ( deflateResult != Z_OK )
         {
-            rfbLog( "deflateInit2 returned error:%d:%s\n",
+            rfbLog( "deflateInit2 returned error:%d:%s",
                     deflateResult,
                     compressor->msg );
             return -1;
@@ -125,14 +121,14 @@ zlibCompress( BYTE *from_buf,
     }
 
     /* Record previous total output size. */
-    previousTotalOut = compressor->total_out;
+    size_t previousTotalOut = compressor->total_out;
 
     /* Compress the raw data into the result buffer. */
     deflateResult = deflate( compressor, Z_SYNC_FLUSH );
 
     if ( deflateResult != Z_OK )
     {
-        rfbLog( "deflate returned error:%d:%s\n",
+        rfbLog( "deflate returned error:%d:%s",
                 deflateResult,
                 compressor->msg);
         return -1;
@@ -167,9 +163,7 @@ static void testColours##bpp(CARD##bpp *data, int size, Bool *mono,	      \
  */									      \
 									      \
 static Bool								      \
-sendZlibHex##bpp(cl, rx, ry, rw, rh)					      \
-    rfbClientPtr cl;							      \
-    int rx, ry, rw, rh;							      \
+sendZlibHex##bpp(rfbClientPtr cl, int rx, int ry, int rw, int rh) \
 {									      \
     int x, y, w, h;							      \
     int startUblen;							      \
@@ -280,7 +274,7 @@ sendZlibHex##bpp(cl, rx, ry, rw, rh)					      \
 					cl->scalingPaddedWidthInBytes, w, h);  \
 									      \
 		    /* Extra copy protects against bus errors on RISC. */     \
-		    memcpy(&cl->updateBuf[cl->ublen], (char *)clientPixelData,	      \
+		    memcpy(&cl->updateBuf[cl->ublen], clientPixelData,	      \
 			    w * h * (bpp/8));				      \
 									      \
 		    cl->ublen += w * h * (bpp/8);				      \
@@ -421,14 +415,7 @@ subrectEncode##bpp(CARD##bpp *data, int w, int h, CARD##bpp bg,		      \
  */									      \
 									      \
 static void								      \
-testColours##bpp(data,size,mono,solid,bg,fg,cl)				      \
-    CARD##bpp *data;							      \
-    int size;								      \
-    Bool *mono;								      \
-    Bool *solid;							      \
-    CARD##bpp *bg;							      \
-    CARD##bpp *fg;							      \
-    rfbClientPtr cl;   							      \
+testColours##bpp(CARD##bpp *data, int size, Bool *mono, Bool *solid, CARD##bpp *bg, CARD##bpp *fg, rfbClientPtr cl) \
 {									      \
     CARD##bpp colour1 = 0, colour2 = 0;				              \
     int n1 = 0, n2 = 0;							      \

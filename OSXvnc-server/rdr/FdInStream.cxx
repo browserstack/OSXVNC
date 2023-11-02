@@ -68,7 +68,7 @@ FdInStream::~FdInStream()
 }
 
 
-int FdInStream::pos()
+size_t FdInStream::pos()
 {
   return offset + ptr - start;
 }
@@ -82,7 +82,7 @@ void FdInStream::readBytes(void* data, int length)
 
   U8* dataPtr = (U8*)data;
 
-  int n = end - ptr;
+  size_t n = end - ptr;
   if (n > length) n = length;
 
   memcpy(dataPtr, ptr, n);
@@ -99,7 +99,7 @@ void FdInStream::readBytes(void* data, int length)
 }
 
 
-int FdInStream::overrun(int itemSize, int nItems)
+size_t FdInStream::overrun(size_t itemSize, size_t nItems)
 {
   if (itemSize > bufSize)
     throw Exception("FdInStream overrun: max itemSize exceeded");
@@ -112,7 +112,7 @@ int FdInStream::overrun(int itemSize, int nItems)
   ptr = start;
 
   while (end < start + itemSize) {
-    int n = readWithTimeoutOrCallback((U8*)end, start + bufSize - end);
+    ssize_t n = readWithTimeoutOrCallback((U8*)end, start + bufSize - end);
     end += n;
   }
 
@@ -127,7 +127,7 @@ int FdInStream::checkReadable(int fd, int timeout)
   while (true) {
     fd_set rfds;
     struct timeval tv;
-    
+
     tv.tv_sec = timeout / 1000;
     tv.tv_usec = (timeout % 1000) * 1000;
 
@@ -165,13 +165,13 @@ static void gettimeofday(struct timeval* tv, void*)
 }
 #endif
 
-int FdInStream::readWithTimeoutOrCallback(void* buf, int len)
+ssize_t FdInStream::readWithTimeoutOrCallback(void* buf, size_t len)
 {
-  struct timeval before, after;
+  struct timeval before = {0, 0};
   if (timing)
     gettimeofday(&before, 0);
 
-  int n = checkReadable(fd, timeout);
+  ssize_t n = checkReadable(fd, timeout);
 
   if (n < 0) throw SystemException("select",errno);
 
@@ -190,13 +190,14 @@ int FdInStream::readWithTimeoutOrCallback(void* buf, int len)
   if (n < 0) throw SystemException("read",errno);
   if (n == 0) throw EndOfStream();
 
-  if (timing) {
+  if (before.tv_sec != 0) {
+    struct timeval after;
     gettimeofday(&after, 0);
 //      fprintf(stderr,"%d.%06d\n",(after.tv_sec - before.tv_sec),
 //              (after.tv_usec - before.tv_usec));
-    int newTimeWaited = ((after.tv_sec - before.tv_sec) * 10000 +
+    time_t newTimeWaited = ((after.tv_sec - before.tv_sec) * 10000 +
                          (after.tv_usec - before.tv_usec) / 100);
-    int newKbits = n * 8 / 1000;
+    size_t newKbits = n * 8 / 1000;
 
 //      if (newTimeWaited == 0) {
 //        fprintf(stderr,"new kbps infinite t %d k %d\n",
@@ -232,7 +233,7 @@ void FdInStream::startTiming()
 
 void FdInStream::stopTiming()
 {
-  timing = false; 
+  timing = false;
   if (timeWaitedIn100us < timedKbits/2)
     timeWaitedIn100us = timedKbits/2; // upper limit 20Mbit/s
 }

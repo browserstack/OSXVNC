@@ -47,15 +47,14 @@
 
 Bool Must_have_memory = FALSE;
 
-unsigned long * 
-Xalloc (amount)
-    unsigned long amount;
+unsigned long *
+Xalloc (unsigned long amount)
 {
 #if !defined(__STDC__) && !defined(AMOEBA)
     char                *malloc();
 #endif
     register pointer  ptr;
-        
+
     if ((long)amount <= 0) {
         return (unsigned long *)NULL;
     }
@@ -75,13 +74,12 @@ Xalloc (amount)
 }
 
 /*****************
- * XNFalloc 
+ * XNFalloc
  * "no failure" realloc, alternate interface to Xalloc w/o Must_have_memory
  *****************/
 
 unsigned long *
-XNFalloc (amount)
-    unsigned long amount;
+XNFalloc (unsigned long amount)
 {
 #if !defined(__STDC__) && !defined(AMOEBA)
     char             *malloc();
@@ -107,8 +105,7 @@ XNFalloc (amount)
  *****************/
 
 unsigned long *
-Xcalloc (amount)
-    unsigned long   amount;
+Xcalloc (unsigned long amount)
 {
     unsigned long   *ret;
 
@@ -123,9 +120,7 @@ Xcalloc (amount)
  *****************/
 
 unsigned long *
-Xrealloc (ptr, amount)
-    register pointer ptr;
-    unsigned long amount;
+Xrealloc (pointer ptr, unsigned long amount)
 {
 #if !defined(__STDC__) && !defined(AMOEBA)
     char *malloc();
@@ -154,16 +149,14 @@ Xrealloc (ptr, amount)
         FatalError("Out of memory");
     return (unsigned long *)NULL;
 }
-                    
+
 /*****************
- * XNFrealloc 
+ * XNFrealloc
  * "no failure" realloc, alternate interface to Xrealloc w/o Must_have_memory
  *****************/
 
 unsigned long *
-XNFrealloc (ptr, amount)
-    register pointer ptr;
-    unsigned long amount;
+XNFrealloc (pointer ptr, unsigned long amount)
 {
     if (( ptr = (pointer)Xrealloc( ptr, amount ) ) == NULL)
     {
@@ -174,15 +167,14 @@ XNFrealloc (ptr, amount)
 
 /*****************
  *  Xfree
- *    calls free 
- *****************/    
+ *    calls free
+ *****************/
 
 void
-Xfree(ptr)
-    register pointer ptr;
+Xfree(pointer ptr)
 {
     if (ptr)
-        free((char *)ptr); 
+        free((char *)ptr);
 }
 
 void

@@ -28,13 +28,13 @@ Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
                         All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its 
-documentation for any purpose and without fee is hereby granted, 
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in 
+both that copyright notice and this permission notice appear in
 supporting documentation, and that the name of Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.  
+software without specific, written prior permission.
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -107,9 +107,7 @@ typedef struct _NewClientRec *NewClientPtr;
 extern Bool OsDelayInitColors;
 
 extern int WaitForSomething(
-#if NeedFunctionPrototypes
     int* /*pClientsReady*/
-#endif
 );
 
 #ifdef LBX
@@ -121,315 +119,221 @@ extern int StandardReadRequestFromClient(
 );
 #else
 extern int ReadRequestFromClient(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/
-#endif
 );
 #endif /* LBX */
 
 extern Bool InsertFakeRequest(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/,
     char* /*data*/,
     int /*count*/
-#endif
 );
 
 extern int ResetCurrentRequest(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/
-#endif
 );
 
 extern void FlushAllOutput(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern void FlushIfCriticalOutputPending(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern void SetCriticalOutputPending(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern int WriteToClient(
-#if NeedFunctionPrototypes
     ClientPtr /*who*/,
     int /*count*/,
     char* /*buf*/
-#endif
 );
 
 extern void ResetOsBuffers(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern void CreateWellKnownSockets(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern void ResetWellKnownSockets(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern XID
 AuthorizationIDOfClient(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/
-#endif
 );
 
 extern char *ClientAuthorized(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/,
     unsigned int /*proto_n*/,
     char* /*auth_proto*/,
     unsigned int /*string_n*/,
     char* /*auth_string*/
-#endif
 );
 
 extern Bool EstablishNewConnections(
-#if NeedFunctionPrototypes
     ClientPtr /*clientUnused*/,
     pointer /*closure*/
-#endif
 );
 
 extern void CheckConnections(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern void CloseDownConnection(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/
-#endif
 );
 
 extern int AddEnabledDevice(
-#if NeedFunctionPrototypes
     int /*fd*/
-#endif
 );
 
 extern int RemoveEnabledDevice(
-#if NeedFunctionPrototypes
     int /*fd*/
-#endif
 );
 
 extern int OnlyListenToOneClient(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/
-#endif
 );
 
 extern int ListenToAllClients(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern int IgnoreClient(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/
-#endif
 );
 
 extern int AttendClient(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/
-#endif
 );
 
 extern int MakeClientGrabImpervious(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/
-#endif
 );
 
 extern int MakeClientGrabPervious(
-#if NeedFunctionPrototypes
     ClientPtr /*client*/
-#endif
 );
 
 extern void Error(
-#if NeedFunctionPrototypes
     char* /*str*/
-#endif
 );
 
 extern CARD32 GetTimeInMillis(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern int AdjustWaitForDelay(
-#if NeedFunctionPrototypes
     pointer /*waitTime*/,
     unsigned long /*newdelay*/
-#endif
 );
 
 typedef	struct _OsTimerRec *OsTimerPtr;
 
 typedef CARD32 (*OsTimerCallback)(
-#if NeedFunctionPrototypes
     OsTimerPtr /* timer */,
     CARD32 /* time */,
     pointer /* arg */
-#endif
 );
 
 extern void TimerInit(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern Bool TimerForce(
-#if NeedFunctionPrototypes
     OsTimerPtr /* timer */
-#endif
 );
 
 #define TimerAbsolute (1<<0)
 #define TimerForceOld (1<<1)
 
 extern OsTimerPtr TimerSet(
-#if NeedFunctionPrototypes
     OsTimerPtr /* timer */,
     int /* flags */,
     CARD32 /* millis */,
     OsTimerCallback /* func */,
     pointer /* arg */
-#endif
 );
 
 extern void TimerCheck(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern void TimerCancel(
-#if NeedFunctionPrototypes
     OsTimerPtr /* pTimer */
-#endif
 );
 
 extern void TimerFree(
-#if NeedFunctionPrototypes
     OsTimerPtr /* pTimer */
-#endif
 );
 
 extern SIGVAL AutoResetServer(
-#if NeedFunctionPrototypes
     int /*sig*/
-#endif
 );
 
 extern SIGVAL GiveUp(
-#if NeedFunctionPrototypes
     int /*sig*/
-#endif
 );
 
 extern void UseMsg(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 extern void ProcessCommandLine(
-#if NeedFunctionPrototypes
     int /*argc*/,
     char* /*argv*/[]
-#endif
 );
 
 extern unsigned long *Xalloc(
-#if NeedFunctionPrototypes
     unsigned long /*amount*/
-#endif
 );
 
 extern unsigned long *XNFalloc(
-#if NeedFunctionPrototypes
     unsigned long /*amount*/
-#endif
 );
 
 extern unsigned long *Xcalloc(
-#if NeedFunctionPrototypes
     unsigned long /*amount*/
-#endif
 );
 
 extern unsigned long *Xrealloc(
-#if NeedFunctionPrototypes
     pointer /*ptr*/,
     unsigned long /*amount*/
-#endif
 );
 
 extern unsigned long *XNFrealloc(
-#if NeedFunctionPrototypes
     pointer /*ptr*/,
     unsigned long /*amount*/
-#endif
 );
 
 extern void Xfree(
-#if NeedFunctionPrototypes
     pointer /*ptr*/
-#endif
 );
 
 extern void OsInitAllocator(
-#if NeedFunctionPrototypes
     void
-#endif
 );
 
 typedef SIGVAL (*OsSigHandlerPtr)(
-#if NeedFunctionPrototypes
     int /* sig */
-#endif
 );
 
 extern OsSigHandlerPtr OsSignal(
-#if NeedFunctionPrototypes
     int /* sig */,
     OsSigHandlerPtr /* handler */
-#endif
 );
 
 extern int auditTrailLevel;
 
 extern void AuditF(
-#if NeedVarargsPrototypes
     char* /*f*/,
     ...
-#endif
 );
 
 extern void FatalError(
@@ -438,7 +342,7 @@ extern void FatalError(
     ...
 #endif
 )
-#if __GNUC__ == 2 && __GNUC_MINOR__ > 4 
+#if __GNUC__ == 2 && __GNUC_MINOR__ > 4
 __attribute((noreturn))
 #endif
 ;

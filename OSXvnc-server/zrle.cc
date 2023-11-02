@@ -142,22 +142,21 @@ rdr::MemOutStream* mos = (rdr::MemOutStream*)cl->mosData;
   rect.r.h = Swap16IfLE(h);
   rect.encoding = Swap32IfLE(rfbEncodingZRLE);
 
-  memcpy(&updateBuf[ublen], (char *)&rect,
-         sz_rfbFramebufferUpdateRectHeader);
+  memcpy(&updateBuf[ublen], &rect, sz_rfbFramebufferUpdateRectHeader);
   ublen += sz_rfbFramebufferUpdateRectHeader;
 
   rfbZRLEHeader hdr;
 
   hdr.length = Swap32IfLE(mos->length());
 
-  memcpy(&updateBuf[ublen], (char *)&hdr, sz_rfbZRLEHeader);
+  memcpy(&updateBuf[ublen], &hdr, sz_rfbZRLEHeader);
   ublen += sz_rfbZRLEHeader;
 
   // copy into updateBuf and send from there.  Maybe should send directly?
 
   for (int i = 0; i < mos->length();) {
 
-    int bytesToCopy = UPDATE_BUF_SIZE - ublen;
+    size_t bytesToCopy = UPDATE_BUF_SIZE - ublen;
 
     if (i + bytesToCopy > mos->length()) {
       bytesToCopy = mos->length() - i;

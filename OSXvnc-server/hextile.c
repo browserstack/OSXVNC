@@ -6,7 +6,7 @@
 
 /*
  *  OSXvnc Copyright (C) 2001 Dan McGuirk <mcguirk@incompleteness.net>.
- *  Original Xvnc code Copyright (C) 1999 AT&T Laboratories Cambridge.  
+ *  Original Xvnc code Copyright (C) 1999 AT&T Laboratories Cambridge.
  *  All Rights Reserved.
  *
  *  This is free software; you can redistribute it and/or modify
@@ -38,9 +38,7 @@ static Bool sendHextiles32(rfbClientPtr cl, int x, int y, int w, int h);
  */
 
 Bool
-rfbSendRectEncodingHextile(cl, x, y, w, h)
-    rfbClientPtr cl;
-    int x, y, w, h;
+rfbSendRectEncodingHextile(rfbClientPtr cl, int x, int y, int w, int h)
 {
     rfbFramebufferUpdateRectHeader rect;
 
@@ -55,8 +53,7 @@ rfbSendRectEncodingHextile(cl, x, y, w, h)
     rect.r.h = Swap16IfLE(h);
     rect.encoding = Swap32IfLE(rfbEncodingHextile);
 
-    memcpy(&cl->updateBuf[cl->ublen], (char *)&rect,
-           sz_rfbFramebufferUpdateRectHeader);
+    memcpy(&cl->updateBuf[cl->ublen], &rect, sz_rfbFramebufferUpdateRectHeader);
     cl->ublen += sz_rfbFramebufferUpdateRectHeader;
 
     cl->rfbRectanglesSent[rfbEncodingHextile]++;
@@ -71,7 +68,7 @@ rfbSendRectEncodingHextile(cl, x, y, w, h)
         return sendHextiles32(cl, x, y, w, h);
     }
 
-    rfbLog("rfbSendRectEncodingHextile: bpp %d?\n", cl->format.bitsPerPixel);
+    rfbLog("rfbSendRectEncodingHextile: bpp %d?", cl->format.bitsPerPixel);
     return FALSE;
 }
 
@@ -101,9 +98,7 @@ static void testColours##bpp(CARD##bpp *data, int size, Bool *mono,             
  */                                                                             \
                                                                                 \
 static Bool                                                                     \
-sendHextiles##bpp(cl, rx, ry, rw, rh)                                           \
-    rfbClientPtr cl;                                                            \
-    int rx, ry, rw, rh;                                                         \
+sendHextiles##bpp(rfbClientPtr cl, int rx, int ry, int rw, int rh)              \
 {                                                                               \
     int x, y, w, h;                                                             \
     int startUblen;                                                             \
@@ -177,9 +172,9 @@ sendHextiles##bpp(cl, rx, ry, rw, rh)                                           
                 (*cl->translateFn)(cl->translateLookupTable,                    \
                                    &rfbServerFormat, &cl->format, fbptr,        \
                                    (char *)clientPixelData,                     \
-                                   cl->scalingPaddedWidthInBytes, w, h);         \
+                                   cl->scalingPaddedWidthInBytes, w, h);        \
                                                                                 \
-                memcpy(&cl->updateBuf[cl->ublen], (char *)clientPixelData,      \
+                memcpy(&cl->updateBuf[cl->ublen], clientPixelData,              \
                        w * h * (bpp/8));                                        \
                                                                                 \
                 cl->ublen += w * h * (bpp/8);                                   \
@@ -296,13 +291,7 @@ subrectEncode##bpp(rfbClientPtr cl, CARD##bpp *data, int w, int h,              
  */                                                                             \
                                                                                 \
 static void                                                                     \
-testColours##bpp(data,size,mono,solid,bg,fg)                                    \
-    CARD##bpp *data;                                                            \
-    int size;                                                                   \
-    Bool *mono;                                                                 \
-    Bool *solid;                                                                \
-    CARD##bpp *bg;                                                              \
-    CARD##bpp *fg;                                                              \
+testColours##bpp(CARD##bpp *data, int size, Bool *mono, Bool *solid, CARD##bpp *bg, CARD##bpp *fg) \
 {                                                                               \
     CARD##bpp colour1 = 0, colour2 = 0;                                         \
     int n1 = 0, n2 = 0;                                                         \

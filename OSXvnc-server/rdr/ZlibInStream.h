@@ -39,11 +39,11 @@ namespace rdr {
 
     void setUnderlying(InStream* is, int bytesIn);
     void reset();
-    int pos();
+    size_t pos();
 
   private:
 
-    int overrun(int itemSize, int nItems);
+    size_t overrun(size_t itemSize, size_t nItems);
     void decompress();
 
     InStream* underlying;
